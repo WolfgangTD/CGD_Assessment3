@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5976b98d34bf67844a3aaf16c05675bf
+guid: 0b3cbe19dd400a9469f0342b73ca8204
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TJunctionPiece_0
+      name: TJunctionPiece 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,8 +111,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2cd45cba95bad3041b27ae759e808bae
-      internalID: 1758070647
+      spriteID: 6f440f44cc913b14ebcc07c2df9d324b
+      internalID: -874430759
       vertices: []
       indices: 
       edges: []
@@ -120,7 +120,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: acd5ca9fcd4f6984d83076711fa61a9a
+    spriteID: 54a18fa0c29d9404bb8c813135649454
     internalID: 0
     vertices: []
     indices: 
@@ -128,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      TJunctionPiece_0: 1758070647
+      TJunctionPiece 1_0: -874430759
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
