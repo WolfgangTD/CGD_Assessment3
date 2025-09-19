@@ -1,0 +1,76 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
+
+public class PlayerTweening : MonoBehaviour
+{
+    public Tween currentTween;
+    private GameObject player;
+    public Animator aniController;
+    public float timeController;
+    public Vector3 currentDirection;
+    // Start is called before the first frame update
+    void Start()
+    {
+        player = GameObject.FindWithTag("Player");
+        aniController = GetComponent<Animator>();
+
+        StartCoroutine(PlayTweensSequentially());
+    }
+
+    // Update is called once per frame
+     IEnumerator PlayTweensSequentially()
+    {
+        int counter = 0;
+        while (true)
+        {
+            AddTween(player.transform, player.transform.position, AddDirection(counter), 3f);
+
+            float elapsed = 0f;
+            while (elapsed < currentTween.Duration)
+            {
+                elapsed += Time.deltaTime;
+                float duration = elapsed / currentTween.Duration;
+                currentTween.Target.position = Vector3.Lerp(currentTween.StartPos, currentTween.EndPos, duration);
+                yield return null;
+            }
+
+            currentTween.Target.position = currentTween.EndPos;
+
+            // Go to next direction
+            counter++;
+            if (counter > 3)
+                counter = 0;
+        }
+    }
+
+    void AddTween(Transform targetObject, Vector3 startPos, Vector3 endPos, float duration)
+    {
+        currentTween = new Tween(targetObject, startPos, endPos, Time.time, duration);
+    }
+    Vector3 AddDirection(int counter)
+    {
+        if (counter == 0)
+        {
+            //right
+            return new Vector3(player.transform.position.x + 1.6f, player.transform.position.y, player.transform.position.z);
+        } else if( counter == 1)
+        {
+            //down
+            return new Vector3(player.transform.position.x, player.transform.position.y - 1.28f, player.transform.position.z);
+        } else if (counter == 2)
+        {
+            //left
+            return new Vector3(player.transform.position.x - 1.6f, player.transform.position.y, player.transform.position.z);
+        }else if (counter == 3)
+        {
+            //up
+            return new Vector3(player.transform.position.x, player.transform.position.y + 1.28f, player.transform.position.z);
+        } else
+        {
+            Debug.Log(counter);
+            return new Vector3(0, 0, 0);
+        }
+    }
+}
