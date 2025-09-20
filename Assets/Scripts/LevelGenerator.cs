@@ -68,11 +68,37 @@ public class LevelGeneratort : MonoBehaviour
                     //first tile
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
-                if (levelMap[x, y] == 0 || levelMap[x, y] == 5 || levelMap[x, y] == 6)
+                if (mapBlueprint[y,x] == 0 || mapBlueprint[y,x] == 5 || mapBlueprint[y,x] == 6)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
-                
+                if (mapBlueprint[y,x] == 1 || mapBlueprint[y,x] == 3)
+                {
+                    if (x != 0 && y != 0 && x != mapBlueprint.GetLength(0) && y != mapBlueprint.GetLength(1))
+                    {
+                        if (mapBlueprint[y,x-1] == 1 || mapBlueprint[y,x-1] == 2 || mapBlueprint[y,x-1] == 3 ||mapBlueprint[y,x-1] == 4)
+                        {
+                            if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2 || mapBlueprint[y - 1, x] == 3 || mapBlueprint[y - 1, x] == 4)
+                            {
+                                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                            }
+                            else
+                            {
+                                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                            }
+                        } else
+                        {
+                            if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2 || mapBlueprint[y - 1, x] == 3 || mapBlueprint[y - 1, x] == 4)
+                            {
+                                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                            }
+                            else
+                            {
+                                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
