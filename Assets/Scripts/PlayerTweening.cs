@@ -7,7 +7,7 @@ public class PlayerTweening : MonoBehaviour
 {
     public Tween currentTween;
     private GameObject player;
-    public Animator aniController;
+    private Animator aniController;
     public float timeController;
     public Vector3 currentDirection;
     // Start is called before the first frame update
@@ -26,7 +26,7 @@ public class PlayerTweening : MonoBehaviour
         while (true)
         {
             AddTween(player.transform, player.transform.position, AddDirection(counter), 3f);
-
+            aniController.SetInteger("Direction", counter);
             float elapsed = 0f;
             while (elapsed < currentTween.Duration)
             {
@@ -54,6 +54,7 @@ public class PlayerTweening : MonoBehaviour
         if (counter == 0)
         {
             //right
+            
             return new Vector3(player.transform.position.x + 1.6f, player.transform.position.y, player.transform.position.z);
         } else if( counter == 1)
         {
