@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class LevelGeneratort : MonoBehaviour
 {
-    public List<Sprite> levelTiles = new List<Sprite>();
-    public GameObject pelletTile;
-    public GameObject powerPelletTile;
+    public List<GameObject> levelTiles = new List<GameObject>();
+    public GameObject map;
+    public GameObject player;
+    public GameObject ghost1;
+    public GameObject ghost2;
+    public GameObject ghost3;
+    public GameObject ghost4;
     // Start is called before the first frame update
     int[,] levelMap =
     {
@@ -28,8 +33,32 @@ public class LevelGeneratort : MonoBehaviour
     };
     void Start()
     {
-
+        DestroyCurrentMap(map);
+        GenerateMap(levelMap);
     }
-
-    
+    void DestroyCurrentMap(GameObject map)
+    {
+        foreach (Transform child in map.GetComponentsInChildren<Transform>())
+        {
+            if (child != map.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
+    void GenerateMap(int[,] mapBlueprint)
+    {
+        for(int y = 0; y < mapBlueprint.GetLength(0); y++)
+        {
+            for(int x = 0; x < mapBlueprint.GetLength(1); x++)
+            {
+                Vector3 transformPos = new Vector3(x * 0.32f, -y * 0.32f, 0);
+                if (y == 1 && x == 1)
+                {
+                    Instantiate(player, transformPos, Quaternion.identity, map.transform);
+                }
+                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+            }
+        }
+    }
 }
