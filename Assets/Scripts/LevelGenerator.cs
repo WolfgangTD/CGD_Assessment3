@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 public class LevelGeneratort : MonoBehaviour
@@ -12,6 +13,7 @@ public class LevelGeneratort : MonoBehaviour
     public GameObject ghost2;
     public GameObject ghost3;
     public GameObject ghost4;
+    public List<GameObject> destroyThese = new List<GameObject>();
     // Start is called before the first frame update
     int[,] levelMap =
     {
@@ -34,6 +36,10 @@ public class LevelGeneratort : MonoBehaviour
     void Start()
     {
         DestroyCurrentMap(map);
+        foreach(GameObject obj in destroyThese)
+        {
+            GameObject.Destroy(obj);
+        }
         GenerateMap(levelMap);
     }
     void DestroyCurrentMap(GameObject map)
@@ -55,9 +61,18 @@ public class LevelGeneratort : MonoBehaviour
                 Vector3 transformPos = new Vector3(x * 0.32f, -y * 0.32f, 0);
                 if (y == 1 && x == 1)
                 {
-                    Instantiate(player, transformPos, Quaternion.identity, map.transform);
+                    Instantiate(player, new Vector3(x * 0.16f, -y * 0.32f, 0), Quaternion.identity);
                 }
-                Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                if (x == 0 && y == 0)
+                {
+                    //first tile
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (levelMap[x, y] == 0 || levelMap[x, y] == 5 || levelMap[x, y] == 6)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                
             }
         }
     }
