@@ -16,22 +16,22 @@ public class PlayerTweening : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         aniController = GetComponent<Animator>();
 
-        StartCoroutine(PlayTweensSequentially());
+        StartCoroutine(PlayerMove());
     }
 
     // Update is called once per frame
-     IEnumerator PlayTweensSequentially()
+     IEnumerator PlayerMove()
     {
         int counter = 0;
         while (true)
         {
             AddTween(player.transform, player.transform.position, AddDirection(counter), 3f);
             aniController.SetInteger("Direction", counter);
-            float elapsed = 0f;
-            while (elapsed < currentTween.Duration)
+            float timeSince = 0f;
+            while (timeSince < currentTween.Duration)
             {
-                elapsed += Time.deltaTime;
-                float duration = elapsed / currentTween.Duration;
+                timeSince += Time.deltaTime;
+                float duration = timeSince / currentTween.Duration;
                 currentTween.Target.position = Vector3.Lerp(currentTween.StartPos, currentTween.EndPos, duration);
                 yield return null;
             }
