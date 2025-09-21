@@ -53,6 +53,96 @@ public class LevelGeneratort : MonoBehaviour
         }
     }
 
+    public float GenerateCorner(int y, int x, int[,] mapBlueprint)
+    {
+        bool up = (y > 0) && (mapBlueprint[y - 1, x] == 4 || mapBlueprint[y - 1, x] == 3);
+        bool down = (y < mapBlueprint.GetLength(0) - 1) && (mapBlueprint[y + 1, x] == 4 || mapBlueprint[y + 1, x] == 3);
+        bool left = (x > 0) && (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3);
+        bool right = (x < mapBlueprint.GetLength(1) - 1) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3);
+
+        if (up && right && !down && !left) return 90f;
+        else if (up && left && !right && !down) return 180f;
+        else if (down && right && !left && !up) return 0f;
+        else if (down && left && !right && !up) return 270f;
+        else if (up && !left && !right && !down) return 90f;
+        else if (up && !left && !right && !down && x == mapBlueprint.GetLength(1)) return 90f;
+        else if (!up && !left && !right && down && x == mapBlueprint.GetLength(1)) return 0f;
+        else if (up && !left && !right && !down && x == 0) return 180f;
+        else if (!up && !left && !right && down && x == 0) return 270f;
+
+        if((y > 0) && (mapBlueprint[y - 1, x] == 3)){ up = false; }
+        if((y < mapBlueprint.GetLength(0) - 1) && (mapBlueprint[y + 1, x] == 3)){ down = false; }
+        if((x > 0) && (mapBlueprint[y, x - 1] == 3)) { left = false; }
+        if ((x < mapBlueprint.GetLength(1) - 1) && (mapBlueprint[y, x + 1] == 3)) { right = false; }
+        
+        if((up && left && right))
+        {
+            if (mapBlueprint[y-2, x] != 4 && mapBlueprint[y - 2, x] != 3)
+            {
+                up = false;
+            }
+            if (mapBlueprint[y, x-2] != 4 && mapBlueprint[y, x - 2] != 3)
+            {
+                left = false;
+            }
+            if (mapBlueprint[y, x + 2] != 4 && mapBlueprint[y, x + 2] != 3)
+            {
+                right = false;
+            }
+        }else if(down && left && right)
+        {
+             if (mapBlueprint[y, x-2] != 4 && mapBlueprint[y, x - 2] != 3)
+            {
+                left = false;
+            }
+            if (mapBlueprint[y, x + 2] != 4 && mapBlueprint[y, x + 2] != 3)
+            {
+                right = false;
+            }
+            if (mapBlueprint[y+2, x] != 4 && mapBlueprint[y+2, x] != 3)
+            {
+                down = false;
+            }
+        }else if (up && down && right)
+        {
+            if (mapBlueprint[y - 2, x] != 4 && mapBlueprint[y - 2, x] != 3)
+            {
+                up = false;
+            }
+            if (mapBlueprint[y, x + 2] != 4 && mapBlueprint[y, x + 2] != 3)
+            {
+                right = false;
+            }
+            if (mapBlueprint[y+2, x] != 4 && mapBlueprint[y+2, x] != 3)
+            {
+                down = false;
+            }
+        } else if(up && down && left)
+        {
+            if (mapBlueprint[y-2, x] != 4 && mapBlueprint[y - 2, x] != 3)
+            {
+                up = false;
+            }
+            if (mapBlueprint[y, x-2] != 4 && mapBlueprint[y, x - 2] != 3)
+            {
+                left = false;
+            }
+            if (mapBlueprint[y+2, x] != 4 && mapBlueprint[y+2, x] != 3)
+            {
+                down = false;
+            }
+        }
+        
+        if (up && right && !down && !left) return 90f;
+        else if (up && left && !right && !down) return 180f;
+        else if (down && right && !left && !up) return 0f;
+        else if (down && left && !right && !up) return 270f;
+        else if (up && !left && !right && !down) return 90f;
+        
+        UnityEngine.Debug.Log(up +"+"+ down +"+"+ left +"+"+ right);
+        return -45f;
+    }
+
     void GenerateMap(int[,] mapBlueprint)
     {
         for(int y = 0; y < mapBlueprint.GetLength(0); y++)
@@ -154,9 +244,9 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
-                    if(y > 0)
+                    if (y > 0)
                     {
-                        if(mapBlueprint[y-1, x] == 1 || mapBlueprint[y-1, x] == 2)
+                        if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
                         {
                             if (x > 0)
                             {
@@ -180,7 +270,8 @@ public class LevelGeneratort : MonoBehaviour
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
                                 }
                             }
-                        } else
+                        }
+                        else
                         {
                             if (x > 0)
                             {
@@ -206,6 +297,10 @@ public class LevelGeneratort : MonoBehaviour
                             }
                         }
                     }
+                }
+                if (mapBlueprint[y, x] == 3)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, GenerateCorner(y,x,mapBlueprint)), map.transform);
                 }
             }
         }
