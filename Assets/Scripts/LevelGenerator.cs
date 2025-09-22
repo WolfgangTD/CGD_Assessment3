@@ -650,9 +650,9 @@ public class LevelGeneratort : MonoBehaviour
         for (int y = mapBlueprint.GetLength(0)-2; y >= 0; y--)
         {
             int readX = 0;
-            for (int x = mapBlueprint.GetLength(1)-1; x >= 0; x--)
+            for (int x = mapBlueprint.GetLength(1) - 1; x >= 0; x--)
             {
-                Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY-mapBlueprint.GetLength(0)) * 0.32f, 0);
+                Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY - mapBlueprint.GetLength(0)) * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
@@ -818,7 +818,8 @@ public class LevelGeneratort : MonoBehaviour
                     }
                 }
                 readX++;
-            }
+            }    
+        
             readY++;
         }
     }
