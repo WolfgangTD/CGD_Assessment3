@@ -8,12 +8,11 @@ public class PlayerTweening : MonoBehaviour
     public Tween currentTween;
     private GameObject player;
     private Animator aniController;
-    public float timeController;
-    public Vector3 currentDirection;
+
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player");
+        player = gameObject;
         aniController = GetComponent<Animator>();
 
         StartCoroutine(PlayerMove());
@@ -38,7 +37,6 @@ public class PlayerTweening : MonoBehaviour
 
             currentTween.Target.position = currentTween.EndPos;
 
-            // Go to next direction
             counter++;
             if (counter > 3)
                 counter = 0;
