@@ -212,11 +212,11 @@ public class LevelGeneratort : MonoBehaviour
                     {
                         if (x == 0)
                         {
-                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
                         }
                         else if (x == mapBlueprint.GetLength(1))
                         {
-                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
                         }
                     }
                 }
@@ -281,7 +281,8 @@ public class LevelGeneratort : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform); 
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+ 
                                 }
                             }
                         }
@@ -289,7 +290,20 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 3)
                 {
-                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, GenerateCorner(y, x, mapBlueprint)), map.transform);
+                    float rotation = GenerateCorner(y, x, mapBlueprint);
+                    if (rotation == 90f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                    } else if (rotation == 180f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }else if (rotation == 270f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                    }else if (rotation == 0f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    }
                 }
                 readX++;
             }
@@ -453,12 +467,366 @@ public class LevelGeneratort : MonoBehaviour
             }
         }
     }
+
+    void MapGenerationLogic3(int[,] mapBlueprint)
+    {
+        int readY = 0;
+        for (int y = mapBlueprint.GetLength(0) - 2; y >= 0; y--)
+        {
+            for (int x = 0; x < mapBlueprint.GetLength(1); x++)
+            {
+                Vector3 transformPos = new Vector3(x * 0.32f, (-readY - mapBlueprint.GetLength(0)) * 0.32f, 0);
+                if (y == 0 && x == 0)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                }
+                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 2 && x > 0)
+                {
+                    if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                else if (mapBlueprint[y, x] == 2 && x <= 0)
+                {
+                    if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                if (mapBlueprint[y, x] == 4)
+                {
+                    if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
+                    {
+                        if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        }
+                        else
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        }
+                    }
+                    if (x == mapBlueprint.GetLength(1) - 1)
+                    {
+                        if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        }
+                        else
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 7)
+                {
+                    if (y == 0)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else if (y == mapBlueprint.GetLength(0))
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    }
+                    else if (y > 0 && y < mapBlueprint.GetLength(0))
+                    {
+                        if (x == 0)
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        }
+                        else if (x == mapBlueprint.GetLength(1))
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 8)
+                {
+                    if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                if (mapBlueprint[y, x] == 1)
+                {
+                    if (y > 0)
+                    {
+                        if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
+                        {
+                            if (x > 0)
+                            {
+                                if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (x > 0)
+                            {
+                                if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 3)
+                {
+                    float rotation = GenerateCorner(y, x, mapBlueprint);
+                    if (rotation == 90f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                    }
+                    else if (rotation == 180f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    }
+                    else if (rotation == 270f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                    }
+                    else if (rotation == 0f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                }
+            }
+            readY++;
+        }
+    }
+    void MapGenerationLogic4(int[,] mapBlueprint)
+    {
+        int readY = 0;
+        for (int y = mapBlueprint.GetLength(0)-2; y >= 0; y--)
+        {
+            int readX = 0;
+            for (int x = mapBlueprint.GetLength(1)-1; x >= 0; x--)
+            {
+                Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY-mapBlueprint.GetLength(0)) * 0.32f, 0);
+                if (y == 0 && x == 0)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                }
+                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 2 && x > 0)
+                {
+                    if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                else if (mapBlueprint[y, x] == 2 && x <= 0)
+                {
+                    if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                if (mapBlueprint[y, x] == 4)
+                {
+                    if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
+                    {
+                        if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        }
+                        else
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        }
+                    }
+                    if (x == mapBlueprint.GetLength(1) - 1)
+                    {
+                        if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        }
+                        else
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 7)
+                {
+                    if (y == 0)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else if (y == mapBlueprint.GetLength(0))
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    }
+                    else if (y > 0 && y < mapBlueprint.GetLength(0))
+                    {
+                        if (x == 0)
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                        }
+                        else if (x == mapBlueprint.GetLength(1))
+                        {
+                            Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 8)
+                {
+                    if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    }
+                }
+                if (mapBlueprint[y, x] == 1)
+                {
+                    if (y > 0)
+                    {
+                        if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
+                        {
+                            if (x > 0)
+                            {
+                                if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (x > 0)
+                            {
+                                if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                }
+                                else
+                                {
+                                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (mapBlueprint[y, x] == 3)
+                {
+                    float rotation = GenerateCorner(y, x, mapBlueprint);
+                    if (rotation == 90f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    }
+                    else if (rotation == 180f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                    }
+                    else if (rotation == 270f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    }
+                    else if (rotation == 0f)
+                    {
+                        Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                    }
+                }
+                readX++;
+            }
+            readY++;
+        }
+    }
     void GenerateMap(int[,] mapBlueprint)
     {
         MapGenerationLogic(mapBlueprint);
         MapGenerationLogic2(mapBlueprint);
-        //MapGenerationLogic3(mapBlueprint);
-        //MapGenerationLogic4(mapBlueprint);
+        MapGenerationLogic3(mapBlueprint);
+        MapGenerationLogic4(mapBlueprint);
     }
-
 }
