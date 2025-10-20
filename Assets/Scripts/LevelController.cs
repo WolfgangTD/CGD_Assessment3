@@ -27,4 +27,8 @@ public class LevelController : MonoBehaviour
     {
         SceneManager.LoadScene(2);
     }
+    public void LoadLevel0()
+    {
+        SceneManager.LoadScene(0);
+    }
 }
