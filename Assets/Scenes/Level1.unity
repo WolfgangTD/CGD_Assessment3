@@ -30054,7 +30054,7 @@ GameObject:
   - component: {fileID: 998919743}
   m_Layer: 0
   m_Name: LevelGenerator
-  m_TagString: Untagged
+  m_TagString: LevelGenerator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55758,7 +55758,7 @@ GameObject:
   - component: {fileID: 1871165262}
   m_Layer: 0
   m_Name: Map
-  m_TagString: Untagged
+  m_TagString: Level
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59569,7 +59569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d29b551842af41c459faaa8c570f630b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapGenerator: {fileID: 998919742}
+  levelGen: {fileID: 0}
 --- !u!1 &2012035904
 GameObject:
   m_ObjectHideFlags: 0

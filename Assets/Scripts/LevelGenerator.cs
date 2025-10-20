@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using Debug = UnityEngine.Debug;
 
 public class LevelGeneratort : MonoBehaviour
 {
     public List<GameObject> levelTiles = new List<GameObject>();
     public GameObject map;
+    public Dictionary<Vector3, string> tileMap = new Dictionary<Vector3, string>();
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -145,14 +148,27 @@ public class LevelGeneratort : MonoBehaviour
                 Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, -y * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f,0f,270f), map.transform);
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.TryAdd(transformPos, "Empty");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.TryAdd(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.TryAdd(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -164,6 +180,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -175,6 +192,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -200,6 +218,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
@@ -222,6 +241,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.TryAdd(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -233,6 +253,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -290,6 +311,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 3)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     float rotation = GenerateCorner(y, x, mapBlueprint);
                     if (rotation == 90f)
                     {
@@ -320,12 +342,24 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.TryAdd(transformPos, "Empty");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.TryAdd(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.TryAdd(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -337,6 +371,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -348,6 +383,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -373,6 +409,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
@@ -395,6 +432,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.TryAdd(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -406,6 +444,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -462,6 +501,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 3)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, GenerateCorner(y, x, mapBlueprint)), map.transform);
                 }
             }
@@ -478,14 +518,27 @@ public class LevelGeneratort : MonoBehaviour
                 Vector3 transformPos = new Vector3(x * 0.32f, (-readY - mapBlueprint.GetLength(0)) * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.TryAdd(transformPos, "Empty");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.TryAdd(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.TryAdd(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -497,6 +550,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -508,6 +562,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -533,6 +588,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -555,6 +611,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.TryAdd(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -566,6 +623,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -622,6 +680,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 3)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     float rotation = GenerateCorner(y, x, mapBlueprint);
                     if (rotation == 90f)
                     {
@@ -655,14 +714,27 @@ public class LevelGeneratort : MonoBehaviour
                 Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY - mapBlueprint.GetLength(0)) * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.TryAdd(transformPos, "Empty");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.TryAdd(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.TryAdd(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -674,6 +746,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -685,6 +758,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -710,6 +784,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -732,6 +807,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.TryAdd(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -743,6 +819,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -799,6 +876,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 3)
                 {
+                    tileMap.TryAdd(transformPos, "Wall");
                     float rotation = GenerateCorner(y, x, mapBlueprint);
                     if (rotation == 90f)
                     {

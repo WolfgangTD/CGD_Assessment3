@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class PacStudentController : MonoBehaviour
 {
@@ -11,23 +12,15 @@ public class PacStudentController : MonoBehaviour
     private string currentInput;
     private bool isTweening;
     private Vector3 movement;
-    public GameObject mapGenerator;
-    private List<GameObject> levelTiles;
+    public GameObject levelGen;
+    Dictionary<Vector3, string> tileMap;
     // Start is called before the first frame update
     void Start()
     {
         player = gameObject;
         aniController = GetComponent<Animator>();
-        levelTiles = mapGenerator.GetComponent<LevelGeneratort>().levelTiles;
-        foreach (GameObject tile in levelTiles)
-        {
-            Vector3 checker = new Vector3(tile.transform.position.x - 5.13999987f, tile.transform.position.y + 7.65999985f, tile.transform.position.z);
-            Debug.Log(tile.transform.position);
-            if (tile.transform.position == player.transform.position)
-            {
-                //Vector3(5.13999987,-7.65999985,0) map pos
-            }
-        }
+        levelGen = GameObject.FindWithTag("LevelGenerator");
+        tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
     }
 
     // Update is called once per frame
@@ -38,28 +31,29 @@ public class PacStudentController : MonoBehaviour
         {
             CheckNextMove();
         }
-        if (Input.GetAxis("Horizontal") < 0)
-        {
-            currentInput = "left";
-        }
-        else if (Input.GetAxis("Horizontal") > 0)
-        {
-            currentInput = "right";
-        }
-        else if (Input.GetAxis("Vertical") < 0)
-        {
-            currentInput = "down";
-        }
-        else if (Input.GetAxis("Vertical") > 0)
-        {
-            currentInput = "up";
-        }
+
     }
     void GetMovementInput()
     {
         movement.x = Input.GetAxis("Horizontal");
         movement.y = Input.GetAxis("Vertical");
         movement = Vector3.ClampMagnitude(movement, 1.0f);
+        if (Input.GetAxis("Horizontal") < 0)
+        {
+            lastInput = "left";
+        }
+        else if (Input.GetAxis("Horizontal") > 0)
+        {
+            lastInput = "right";
+        }
+        else if (Input.GetAxis("Vertical") < 0)
+        {
+            lastInput = "down";
+        }
+        else if (Input.GetAxis("Vertical") > 0)
+        {
+            lastInput = "up";
+        }
     }
     void UpdatePlayer(string direction)
     {
@@ -83,11 +77,76 @@ public class PacStudentController : MonoBehaviour
             StartCoroutine(PlayerMove(player.transform.position, player.transform.position + (Vector3.right * 0.32f), 1f, "Right"));
             aniController.SetInteger("Direction", 0);
         }
+        currentInput = lastInput;
     }
+    Vector3 RoundToGrid(Vector3 pos)
+{
+    return new Vector3(
+        Mathf.Round(pos.x / 0.32f) * 0.32f,
+        Mathf.Round(pos.y / 0.32f) * 0.32f,
+        0f
+    );
+}
     void CheckNextMove()
     {
-        UpdatePlayer(lastInput);
-        UpdatePlayer(currentInput);
+        Vector3 checker = player.transform.position + (Vector3.right * 0.16f);
+        Debug.Log(checker);
+        if (lastInput == "up")
+        {
+            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.up * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(lastInput);
+            }
+        }
+        else if (lastInput == "down")
+        {
+            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.down * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(lastInput);
+            }
+        }
+        else if (lastInput == "left")
+        {
+            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.left * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(lastInput);
+            }
+        }
+        else if (lastInput == "right")
+        {
+            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.right * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(lastInput);
+            }
+        }
+        else if (currentInput == "up")
+        {
+            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.up * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(currentInput);
+            }
+        }
+        else if (currentInput == "down")
+        {
+            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.down * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(currentInput);
+            }
+        }
+        else if (currentInput == "left")
+        {
+            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.left * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(currentInput);
+            }
+        }
+        else if(currentInput == "right")
+        {
+            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.right * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdatePlayer(currentInput);
+            }
+        }
     }
     IEnumerator PlayerMove(Vector3 startPos, Vector3 endPos, float duration, string direction)
     {
