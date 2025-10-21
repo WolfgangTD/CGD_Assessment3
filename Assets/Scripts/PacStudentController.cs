@@ -27,11 +27,11 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GetMovementInput();
         if (!isTweening)
         {
             CheckNextMove();
         }
-        GetMovementInput();
     }
     void GetMovementInput()
     {
@@ -56,7 +56,7 @@ public class PacStudentController : MonoBehaviour
         }
     }
     void UpdatePlayer(string direction, Vector3 endpos)
-    { 
+    {
         if (direction == "up")
         {
             StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "up"));
@@ -77,69 +77,64 @@ public class PacStudentController : MonoBehaviour
             StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "right"));
             aniController.SetInteger("Direction", 0);
         }
-        currentInput = lastInput;
+    }
+    Vector3 PosToTileMap(Vector3 pos)
+    {
+        return new Vector3(
+            Mathf.Round(pos.x / stepSize) * stepSize,
+            Mathf.Round(pos.y / stepSize) * stepSize,
+            0
+        );
     }
 
     void CheckNextMove()
     {
         Vector3 checker = player.transform.position;
+        Vector3 nextPos = checker;
         if (lastInput == "up")
         {
-            if (tileMap.TryGetValue(checker + (Vector3.up * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(lastInput, checker + (Vector3.up * stepSize));
-            }
+            nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
         }
         else if (lastInput == "down")
         {
-            if (tileMap.TryGetValue(checker + (Vector3.down * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(lastInput, checker + (Vector3.down * stepSize));
-            }
+            nextPos = PosToTileMap(checker + (Vector3.down * stepSize));
         }
         else if (lastInput == "left")
         {
-            if (tileMap.TryGetValue(checker + (Vector3.left * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(lastInput, checker + (Vector3.left * stepSize));
-            }
+            nextPos = PosToTileMap(checker + (Vector3.left * stepSize));
         }
         else if (lastInput == "right")
         {
-            if (tileMap.TryGetValue(checker + (Vector3.right * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                Debug.Log(tileType);
-                UpdatePlayer(lastInput, checker + (Vector3.right * stepSize));
-            }
+            nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
         }
-        else if (currentInput == "up")
+        if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
         {
-            if(tileMap.TryGetValue(checker + (Vector3.up * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(currentInput, checker + (Vector3.up * stepSize));
-            }
-        }
-        else if (currentInput == "down")
+            UpdatePlayer(lastInput, nextPos);
+            currentInput = lastInput;
+        } else
         {
-            if (tileMap.TryGetValue(checker + (Vector3.down * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (currentInput == "up")
             {
-                UpdatePlayer(currentInput, checker + (Vector3.down * stepSize));
+                nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
+            }
+            else if (currentInput == "down")
+            {
+                nextPos = PosToTileMap(checker + (Vector3.down * stepSize));
+            }
+            else if (currentInput == "left")
+            {
+                nextPos = PosToTileMap(checker + (Vector3.left * stepSize));
+            }
+            else if (currentInput == "right")
+            {
+                nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
+            }
+            if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
+            {
+                UpdatePlayer(currentInput, nextPos);
             }
         }
-        else if (currentInput == "left")
-        {
-            if(tileMap.TryGetValue(checker + (Vector3.left * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(currentInput, checker + (Vector3.left * stepSize));
-            }
-        }
-        else if(currentInput == "right")
-        {
-            if(tileMap.TryGetValue(checker + (Vector3.right * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-            {
-                UpdatePlayer(currentInput, checker + (Vector3.right * stepSize));
-            }
-        }
+        
     }
     IEnumerator PlayerMove(Vector3 startPos, Vector3 endPos, float duration, string direction)
     {
@@ -153,7 +148,6 @@ public class PacStudentController : MonoBehaviour
             yield return null;
         }
         player.transform.position = endPos;
-        
         isTweening = false;
         lastInput = direction;
     }

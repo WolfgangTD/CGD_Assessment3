@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LevelGenerator
   - Level
+  - MobManager
   layers:
   - Default
   - TransparentFX
