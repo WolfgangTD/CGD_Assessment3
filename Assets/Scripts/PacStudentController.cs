@@ -14,6 +14,7 @@ public class PacStudentController : MonoBehaviour
     private Vector3 movement;
     public GameObject levelGen;
     Dictionary<Vector3, string> tileMap;
+    float stepSize = 0.32f;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,12 +27,11 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetMovementInput();
         if (!isTweening)
         {
             CheckNextMove();
         }
-
+        GetMovementInput();
     }
     void GetMovementInput()
     {
@@ -55,96 +55,89 @@ public class PacStudentController : MonoBehaviour
             lastInput = "up";
         }
     }
-    void UpdatePlayer(string direction)
-    {
+    void UpdatePlayer(string direction, Vector3 endpos)
+    { 
         if (direction == "up")
         {
-            StartCoroutine(PlayerMove(player.transform.position, player.transform.position + (Vector3.up * 0.32f), 1f, "up"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "up"));
             aniController.SetInteger("Direction", 3);
         }
         else if (direction == "down")
         {
-            StartCoroutine(PlayerMove(player.transform.position, player.transform.position + (Vector3.down * 0.32f), 1f, "down"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "down"));
             aniController.SetInteger("Direction", 1);
         }
         else if (direction == "left")
         {
-            StartCoroutine(PlayerMove(player.transform.position, player.transform.position + (Vector3.left * 0.32f), 1f, "left"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "left"));
             aniController.SetInteger("Direction", 2);
         }
         else if (direction == "right")
         {
-            StartCoroutine(PlayerMove(player.transform.position, player.transform.position + (Vector3.right * 0.32f), 1f, "Right"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "right"));
             aniController.SetInteger("Direction", 0);
         }
         currentInput = lastInput;
     }
-    Vector3 RoundToGrid(Vector3 pos)
-{
-    return new Vector3(
-        Mathf.Round(pos.x / 0.32f) * 0.32f,
-        Mathf.Round(pos.y / 0.32f) * 0.32f,
-        0f
-    );
-}
+
     void CheckNextMove()
     {
-        Vector3 checker = player.transform.position + (Vector3.right * 0.16f);
-        Debug.Log(checker);
+        Vector3 checker = player.transform.position;
         if (lastInput == "up")
         {
-            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.up * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(checker + (Vector3.up * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(lastInput);
+                UpdatePlayer(lastInput, checker + (Vector3.up * stepSize));
             }
         }
         else if (lastInput == "down")
         {
-            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.down * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(checker + (Vector3.down * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(lastInput);
+                UpdatePlayer(lastInput, checker + (Vector3.down * stepSize));
             }
         }
         else if (lastInput == "left")
         {
-            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.left * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(checker + (Vector3.left * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(lastInput);
+                UpdatePlayer(lastInput, checker + (Vector3.left * stepSize));
             }
         }
         else if (lastInput == "right")
         {
-            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.right * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(checker + (Vector3.right * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(lastInput);
+                Debug.Log(tileType);
+                UpdatePlayer(lastInput, checker + (Vector3.right * stepSize));
             }
         }
         else if (currentInput == "up")
         {
-            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.up * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if(tileMap.TryGetValue(checker + (Vector3.up * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(currentInput);
+                UpdatePlayer(currentInput, checker + (Vector3.up * stepSize));
             }
         }
         else if (currentInput == "down")
         {
-            if (tileMap.TryGetValue(RoundToGrid(checker + (Vector3.down * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(checker + (Vector3.down * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(currentInput);
+                UpdatePlayer(currentInput, checker + (Vector3.down * stepSize));
             }
         }
         else if (currentInput == "left")
         {
-            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.left * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if(tileMap.TryGetValue(checker + (Vector3.left * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(currentInput);
+                UpdatePlayer(currentInput, checker + (Vector3.left * stepSize));
             }
         }
         else if(currentInput == "right")
         {
-            if(tileMap.TryGetValue(RoundToGrid(checker + (Vector3.right * 0.32f)), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if(tileMap.TryGetValue(checker + (Vector3.right * stepSize), out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
             {
-                UpdatePlayer(currentInput);
+                UpdatePlayer(currentInput, checker + (Vector3.right * stepSize));
             }
         }
     }
@@ -160,6 +153,7 @@ public class PacStudentController : MonoBehaviour
             yield return null;
         }
         player.transform.position = endPos;
+        
         isTweening = false;
         lastInput = direction;
     }
