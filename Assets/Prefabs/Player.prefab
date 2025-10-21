@@ -121,12 +121,12 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 23719f685d5c79b46bbcd4f45b645466, type: 3}
-  m_Resource: {fileID: 8300000, guid: 23719f685d5c79b46bbcd4f45b645466, type: 3}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -221,3 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelGen: {fileID: 0}
+  walking: {fileID: 8300000, guid: 23719f685d5c79b46bbcd4f45b645466, type: 3}
+  walkingEating: {fileID: 8300000, guid: a82a70c2e2cda5a40a4191104f286027, type: 3}
+  hitWall: {fileID: 0}
+  audioSource: {fileID: 0}

@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class PacStudentController : MonoBehaviour
 {
+    public bool wallHit = false;
     public Tween currentTween;
     private GameObject player;
     private Animator aniController;
@@ -15,6 +16,10 @@ public class PacStudentController : MonoBehaviour
     public GameObject levelGen;
     Dictionary<Vector3, string> tileMap;
     float stepSize = 0.32f;
+    public AudioClip walking;
+    public AudioClip walkingEating;
+    public AudioClip hitWall;
+    public AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +27,7 @@ public class PacStudentController : MonoBehaviour
         aniController = GetComponent<Animator>();
         levelGen = GameObject.FindWithTag("LevelGenerator");
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
+        audioSource = player.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -90,7 +96,7 @@ public class PacStudentController : MonoBehaviour
     void CheckNextMove()
     {
         Vector3 checker = player.transform.position;
-        Vector3 nextPos = checker;
+        Vector3 nextPos = new Vector3(0f,0f,0f);
         if (lastInput == "up")
         {
             nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
@@ -111,7 +117,20 @@ public class PacStudentController : MonoBehaviour
         {
             UpdatePlayer(lastInput, nextPos);
             currentInput = lastInput;
-        } else
+            if (tileType == "Pellet" || tileType == "PowerPellet")
+            {
+                audioSource.clip = walkingEating;
+                audioSource.Play();
+                wallHit = false;
+            }
+            else
+            {
+                audioSource.clip = walking;
+                audioSource.Play();
+                wallHit = false;
+            }
+        }
+        else
         {
             if (currentInput == "up")
             {
@@ -132,9 +151,28 @@ public class PacStudentController : MonoBehaviour
             if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
             {
                 UpdatePlayer(currentInput, nextPos);
+                if (tileType2 == "Pellet" || tileType2 == "PowerPellet")
+                {
+                    audioSource.clip = walkingEating;
+                    audioSource.Play();
+                    wallHit = false;
+                }
+                else
+                {
+                    audioSource.clip = walking;
+                    audioSource.Play();
+                    wallHit = false;
+                }
+            } else
+            {
+                if(lastInput != null && !wallHit)
+                {
+                    audioSource.clip = hitWall;
+                    audioSource.Play();
+                    wallHit = true;
+                }
             }
         }
-        
     }
     IEnumerator PlayerMove(Vector3 startPos, Vector3 endPos, float duration, string direction)
     {
