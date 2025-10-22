@@ -11,12 +11,7 @@ public class LevelGeneratort : MonoBehaviour
     public List<GameObject> levelTiles = new List<GameObject>();
     public GameObject map;
     public Dictionary<Vector3, string> tileMap = new Dictionary<Vector3, string>();
-    public GameObject mobManager;
     public GameObject player;
-    public GameObject ghost1;
-    public GameObject ghost2;
-    public GameObject ghost3;
-    public GameObject ghost4;
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -39,12 +34,7 @@ public class LevelGeneratort : MonoBehaviour
     };
     void Start()
     {
-        mobManager = GameObject.FindWithTag("MobManager");
         player = GameObject.FindWithTag("Player");
-        ghost1 = mobManager.GetComponent<MobManager>().ghost1;
-        ghost2 = mobManager.GetComponent<MobManager>().ghost2;
-        ghost3 = mobManager.GetComponent<MobManager>().ghost3;
-        ghost4 = mobManager.GetComponent<MobManager>().ghost4;
         DestroyCurrentMap(map);
         GenerateMap(levelMap);
     }
