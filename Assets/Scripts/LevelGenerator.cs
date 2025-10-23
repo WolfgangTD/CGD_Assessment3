@@ -12,6 +12,10 @@ public class LevelGeneratort : MonoBehaviour
     public GameObject map;
     public Dictionary<Vector3, string> tileMap = new Dictionary<Vector3, string>();
     public GameObject player;
+    public GameObject ghost1;
+    public GameObject ghost2;
+    public GameObject ghost3;
+    public GameObject ghost4;
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -157,6 +161,10 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "Empty");
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost2.transform.position = transformPos;
+                    }
                 }
                 if (mapBlueprint[y, x] == 5)
                 {
@@ -377,6 +385,10 @@ public class LevelGeneratort : MonoBehaviour
 
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "Empty");
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost1.transform.position = transformPos;
+                    }
                 }
                 if (mapBlueprint[y, x] == 5)
                 {
@@ -558,6 +570,10 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     tileMap.Add(transformPos, "Empty");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost3.transform.position = transformPos;
+                    }
                 }
                 if (mapBlueprint[y, x] == 5)
                 {
@@ -761,6 +777,10 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     tileMap.Add(transformPos, "Empty");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost4.transform.position = transformPos;
+                    }
                 }
                 if (mapBlueprint[y, x] == 5)
                 {
