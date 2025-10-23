@@ -53,7 +53,7 @@ public class CherryController : MonoBehaviour
 
     spawnedCrystal = Instantiate(bonusCrystal, spawnPoint, Quaternion.identity);
 
-    StartCoroutine(MoveCherry(spawnedCrystal, 10f, spawnPoint, endPoint));
+    StartCoroutine(MoveCherry(spawnedCrystal, 20f, spawnPoint, endPoint));
 }
 
     IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos ,Vector3 endPos)
