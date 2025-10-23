@@ -10,8 +10,6 @@ public class GameStateController : MonoBehaviour
     private GameObject HUD;
     private GameObject audioController;
     private GameObject[] ghosts;
-    private Coroutine deadStateRoutine;
-    private float buffDuration = 10f;
     public int totalPellets;
     public int lives;
     public float time;
@@ -52,40 +50,9 @@ public class GameStateController : MonoBehaviour
     }
     public void StartBuffState()
     {
-        if (deadStateRoutine != null)
-        {
-            StopCoroutine(deadStateRoutine);
-        }
-        deadStateRoutine = StartCoroutine(ChangeGameState());
-    }
-    private IEnumerator ChangeGameState()
-    {
-        player.GetComponent<PacStudentController>().isBuffed = true;
-        foreach (GameObject ghost in ghosts)
+        foreach(GameObject ghost in ghosts)
         {
             ghost.GetComponent<GhostController>().Scared();
         }
-
-        yield return new WaitForSeconds(7f);
-
-        foreach (GameObject ghost in ghosts)
-        {
-            if (!ghost.GetComponent<GhostController>().isDead)
-            {
-                ghost.GetComponent<GhostController>().Recovering();
-            }
-        }
-        yield return new WaitForSeconds(buffDuration - 7f);
-        foreach (GameObject ghost in ghosts)
-        {
-            if (!ghost.GetComponent<GhostController>().isDead)
-            {
-                ghost.GetComponent<GhostController>().BackToNormal();
-                ghost.GetComponent<GhostController>().canGoToNormal = true;
-            }
-        }
-        player.GetComponent<PacStudentController>().isBuffed = false;
-        
-        deadStateRoutine = null;
     }
 }

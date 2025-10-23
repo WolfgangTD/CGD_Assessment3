@@ -18803,6 +18803,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ghost2
       objectReference: {fileID: 0}
+    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
+      propertyPath: m_Size.x
+      value: 0.15724637
+      objectReference: {fileID: 0}
+    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
+      propertyPath: m_Size.y
+      value: 0.29859477
+      objectReference: {fileID: 0}
+    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2039116925015425789, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.362
@@ -24876,6 +24888,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
+      propertyPath: m_Size.x
+      value: 0.15724637
+      objectReference: {fileID: 0}
+    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
+      propertyPath: m_Size.y
+      value: 0.29859477
+      objectReference: {fileID: 0}
+    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2472326775360730803, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
       propertyPath: m_Name
       value: Ghost3
@@ -30816,6 +30840,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45873a8db5d5fd146b49ac18a02f34b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameOver: 0
+  totalPellets: 0
+  lives: 0
+  time: 0
+  currentScore: 0
 --- !u!1001 &1001983977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46642,7 +46671,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863be252899ba4746a771cc94a5e480d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameOver: 0
   scoreObj: {fileID: 631134254}
   timeObj: {fileID: 400699311}
   startGameText: {fileID: 382636490}

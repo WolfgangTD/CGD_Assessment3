@@ -19,7 +19,6 @@ public class ScoreSetter : MonoBehaviour
     }
     void SetTitleValues()
     {
-        
         scoreText.text = $"{PlayerPrefs.GetInt("HIGHSCORE")}";
         float time = PlayerPrefs.GetFloat("HIGHSCORE_TIME");
         int mins = (int)(time / 60);

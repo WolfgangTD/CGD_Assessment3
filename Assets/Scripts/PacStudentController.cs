@@ -26,6 +26,7 @@ public class PacStudentController : MonoBehaviour
     public Vector3 spawnPoint;
     private GameObject HUD;
     public bool isBuffed = false;
+    public float buffTime = 0f;
 
     public float walkSpeed = 0.4f;
     // Start is called before the first frame update
@@ -150,6 +151,7 @@ public class PacStudentController : MonoBehaviour
                 wallHit = false;
                 isBuffed = true;
                 gameController.GetComponent<GameStateController>().StartBuffState();
+                StartCoroutine(BuffCounter());
                 tileMap[nextPos] = "Empty";
             }
             else
@@ -193,6 +195,7 @@ public class PacStudentController : MonoBehaviour
                     wallHit = false;
                     isBuffed = true;
                     gameController.GetComponent<GameStateController>().StartBuffState();
+                    StartCoroutine(BuffCounter());
                     tileMap[nextPos] = "Empty";
                 }
                 else
@@ -277,5 +280,14 @@ public class PacStudentController : MonoBehaviour
         player.GetComponent<BoxCollider>().enabled = false;
         yield return new WaitForSeconds(1f);
         player.GetComponent<BoxCollider>().enabled = true;
+    }
+    IEnumerator BuffCounter()
+    {
+        while (buffTime < 10f)
+        {
+            buffTime++;
+            yield return null;
+        }
+        buffTime = 0f;
     }
 }
