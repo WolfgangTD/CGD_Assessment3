@@ -31657,7 +31657,7 @@ GameObject:
   - component: {fileID: 1024631270}
   m_Layer: 0
   m_Name: AudioManager
-  m_TagString: Untagged
+  m_TagString: AudioManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33736,6 +33736,42 @@ PrefabInstance:
     - target: {fileID: 402131589016124563, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.12941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.15686275
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.16078432
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.b
+      value: 0.0627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.g
+      value: 0.0627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.r
+      value: 0.0627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.minGradient.key0.b
+      value: 0.7254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.minGradient.key0.g
+      value: 0.7254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
+      propertyPath: ColorModule.gradient.minGradient.key0.r
+      value: 0.7254902
       objectReference: {fileID: 0}
     - target: {fileID: 9034557745620238079, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
       propertyPath: m_UseGravity

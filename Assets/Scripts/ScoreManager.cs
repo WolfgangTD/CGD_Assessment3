@@ -14,7 +14,7 @@ public class ScoreManager : MonoBehaviour
         HUD = GameObject.FindGameObjectWithTag("HUD");
         time = 0;
         currentScore = 0;
-        lives = 0;
+        lives = 3;
     }
     // Update is called once per frame
     void Update()

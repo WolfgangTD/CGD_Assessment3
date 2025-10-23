@@ -25,6 +25,7 @@ public class PacStudentController : MonoBehaviour
     public AudioSource audioSource;
     public Vector3 spawnPoint;
     private GameObject HUD;
+    public bool isBuffed = false;
 
     public float walkSpeed = 0.4f;
     // Start is called before the first frame update
@@ -134,11 +135,20 @@ public class PacStudentController : MonoBehaviour
         {
             UpdatePlayer(lastInput, nextPos);
             currentInput = lastInput;
-            if (tileType == "Pellet" || tileType == "PowerPellet")
+            if (tileType == "Pellet")
             {
                 audioSource.clip = walkingEating;
                 audioSource.Play();
                 wallHit = false;
+                tileMap[nextPos] = "Empty";
+                
+            } else if(tileType == "PowerPellet")
+            {
+                audioSource.clip = walkingEating;
+                audioSource.Play();
+                wallHit = false;
+                isBuffed = true;
+                gameController.GetComponent<GameStateController>().StartBuffState();
                 tileMap[nextPos] = "Empty";
             }
             else
@@ -169,11 +179,19 @@ public class PacStudentController : MonoBehaviour
             if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
             {
                 UpdatePlayer(currentInput, nextPos);
-                if (tileType2 == "Pellet" || tileType2 == "PowerPellet")
+                if (tileType2 == "Pellet")
                 {
                     audioSource.clip = walkingEating;
                     audioSource.Play();
                     wallHit = false;
+                    tileMap[nextPos] = "Empty";
+                }else if(tileType2 == "PowerPellet")
+                {
+                    audioSource.clip = walkingEating;
+                    audioSource.Play();
+                    wallHit = false;
+                    isBuffed = true;
+                    gameController.GetComponent<GameStateController>().StartBuffState();
                     tileMap[nextPos] = "Empty";
                 }
                 else
@@ -217,24 +235,38 @@ public class PacStudentController : MonoBehaviour
             isTweening = false;
             StartCoroutine(ReenableCollider());
             player.transform.position = new Vector3(0f, -4.54f, 0);
-        } else if (other.CompareTag("TeleLeft"))
+        }
+        else if (other.CompareTag("TeleLeft"))
         {
             StopAllCoroutines();
             isTweening = false;
             StartCoroutine(ReenableCollider());
             player.transform.position = new Vector3(8.639999389648438f, -4.54f, 0);
-        }else if (other.CompareTag("BonusCrystal"))
+        }
+        else if (other.CompareTag("BonusCrystal"))
         {
             CherryController.GetComponent<CherryController>().KillCrystal(other.gameObject);
             gameController.GetComponent<ScoreManager>().currentScore += 100;
-        }else if (other.CompareTag("PowerPellet"))
+        }
+        else if (other.CompareTag("PowerPellet"))
         {
             Destroy(other.gameObject);
             gameController.GetComponent<ScoreManager>().currentScore += 50;
-        }else if (other.CompareTag("Pellet") && lastInput!=null)
+        }
+        else if (other.CompareTag("Pellet") && lastInput != null)
         {
             Destroy(other.gameObject);
             gameController.GetComponent<ScoreManager>().currentScore += 10;
+        }
+        
+        if(other.CompareTag("Ghost") && !isBuffed)
+        {
+            gameController.GetComponent<ScoreManager>().lives -= 1;
+            aniController.SetTrigger("isDead");
+        }else if(other.CompareTag("Ghost") && isBuffed)
+        {
+            gameController.GetComponent<ScoreManager>().currentScore += 300;
+            other.GetComponent<GhostController>().Die();
         }
     }
     IEnumerator ReenableCollider()
