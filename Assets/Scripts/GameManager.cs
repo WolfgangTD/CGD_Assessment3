@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    PlayerPrefs HIGHSCORE;
+    PlayerPrefs HIGHSCORE_TIME;
     void Awake()
     {
         DontDestroyOnLoad(GameObject.FindGameObjectWithTag("GameManager"));

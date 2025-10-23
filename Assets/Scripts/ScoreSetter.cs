@@ -13,21 +13,19 @@ public class ScoreSetter : MonoBehaviour
     public TextMeshProUGUI timeText;
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
-        gameController = GameObject.FindGameObjectWithTag("GameController");
-        scoreManager = gameController.GetComponent<ScoreManager>();
         SetTitleValues();
     }
     void SetTitleValues()
     {
         
-        scoreText.text = $"Score: {scoreManager.highScore:000000}";
-        float time = scoreManager.highScoreTime;
+        scoreText.text = $"{PlayerPrefs.GetInt("HIGHSCORE")}";
+        float time = PlayerPrefs.GetFloat("HIGHSCORE_TIME");
         int mins = (int)(time / 60);
         int secs = (int)(time % 60);
         int millisecs = (int)(time * 100 % 100);
 
-        timeText.text = $"Time: {mins:00}:{secs:00}:{millisecs:00}";
+        timeText.text = $"{mins:00}:{secs:00}:{millisecs:00}";
     }
 }

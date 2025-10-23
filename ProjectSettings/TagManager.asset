@@ -17,6 +17,7 @@ TagManager:
   - AudioManager
   - Ghost
   - GameManager
+  - LevelController
   layers:
   - Default
   - TransparentFX

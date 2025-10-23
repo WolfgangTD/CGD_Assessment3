@@ -33,7 +33,7 @@ public class GameStateController : MonoBehaviour
             time += Time.deltaTime;
             Debug.Log(totalPellets);
         }
-        if (lives == 0 || totalPellets <= 0)
+        if (lives == 0 || totalPellets == 0)
         {
             GameOver();
         }
@@ -41,10 +41,13 @@ public class GameStateController : MonoBehaviour
     void GameOver()
     {
         GameObject gameController = GameObject.FindWithTag("GameController");
+        GameObject levelController = GameObject.FindWithTag("LevelController");
         ScoreManager sm = gameController.GetComponent<ScoreManager>();
-        if(currentScore > sm.highScore)
+        LevelController lc = levelController.GetComponent<LevelController>();
+        if(currentScore > PlayerPrefs.GetInt("HIGHSCORE"))
         {
             sm.SetNewScore(currentScore, time);
+            lc.LoadLevel0();
         }
     }
     public void StartBuffState()
