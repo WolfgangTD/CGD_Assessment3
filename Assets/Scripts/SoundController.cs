@@ -18,12 +18,12 @@ public class SoundController : MonoBehaviour
 	
 	IEnumerator Waiting()
 	{
-		while (!HUD.GetComponent<UIManager>().countDownDone)
+		while (HUD.GetComponent<UIManager>().countDownDone == false)
 		{
-			audioSource.clip = loopSound;
-			audioSource.Play();
-			audioSource.loop = true;
+			yield return null;
 		}
-		yield return null;
+		audioSource.clip = loopSound;
+		audioSource.Play();
+		audioSource.loop = true;
     }
 }
