@@ -7,9 +7,11 @@ public class ScoreManager : MonoBehaviour
     public int currentScore;
     public int lives;
     public float time;
+    private GameObject HUD;
     // Start is called before the first frame update
     void Start()
     {
+        HUD = GameObject.FindGameObjectWithTag("HUD");
         time = 0;
         currentScore = 0;
         lives = 0;
@@ -17,6 +19,9 @@ public class ScoreManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        time += Time.deltaTime;
+        if(HUD.GetComponent<UIManager>().countDownDone)
+        {
+            time += Time.deltaTime;
+        }
     }
 }

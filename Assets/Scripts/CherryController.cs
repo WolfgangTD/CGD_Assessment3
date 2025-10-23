@@ -10,10 +10,6 @@ public class CherryController : MonoBehaviour
     public SpriteMask mask;
     //spawn at x -0.3 or 8.9
     //y can be 0.35 to -9.35
-    void Start()
-    {
-        StartCoroutine(CherrySpawner());
-    }
     public void KillCrystal(GameObject crystal)
     {
         StopAllCoroutines();
@@ -21,7 +17,7 @@ public class CherryController : MonoBehaviour
         StartCoroutine(CherrySpawner());
     }
 
-    IEnumerator CherrySpawner()
+    public IEnumerator CherrySpawner()
     {
         yield return new WaitForSeconds(5f);
 

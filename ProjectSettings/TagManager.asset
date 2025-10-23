@@ -13,6 +13,7 @@ TagManager:
   - CherryController
   - Pellet
   - PowerPellet
+  - HUD
   layers:
   - Default
   - TransparentFX

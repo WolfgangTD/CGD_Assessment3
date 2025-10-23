@@ -13,12 +13,18 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI timeText;
     public GameObject GameController;
     private ScoreManager scoreManager;
+    public TextMeshProUGUI startGameText;
+    public GameObject screenCoverUI;
+    public bool countDownDone = false;
+    private GameObject cherryController;
 
     void Start()
     {
         scoreText = scoreObj.GetComponent<TextMeshProUGUI>();
         timeText = timeObj.GetComponent<TextMeshProUGUI>();
         scoreManager = GameController.GetComponent<ScoreManager>();
+        cherryController = GameObject.FindWithTag("CherryController");
+        StartCoroutine(CountDown(screenCoverUI, startGameText));
     }
 
     // Update is called once per frame
@@ -33,8 +39,24 @@ public class UIManager : MonoBehaviour
         timeText.text = $"Time: {mins:00}:{secs:00}:{millisecs:00}";
     }
 
-    void StartGameCountdown()
+    IEnumerator CountDown(GameObject screenCoverUI, TextMeshProUGUI startGameText)
     {
-        
+        int countdownTime=3;
+        while (countdownTime >= 0)
+        {
+            if (countdownTime == 0)
+            {
+                startGameText.text = "GO!";
+            }
+            else
+            {
+                startGameText.text = $"{countdownTime}";
+            }
+            yield return new WaitForSeconds(1f);
+            countdownTime -= 1;
+        }
+        screenCoverUI.SetActive(false);
+        countDownDone = true;
+        StartCoroutine(cherryController.GetComponent<CherryController>().CherrySpawner());
     }
 }

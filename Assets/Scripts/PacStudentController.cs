@@ -24,6 +24,7 @@ public class PacStudentController : MonoBehaviour
     public AudioClip hitWall;
     public AudioSource audioSource;
     public Vector3 spawnPoint;
+    private GameObject HUD;
 
     public float walkSpeed = 0.4f;
     // Start is called before the first frame update
@@ -36,15 +37,19 @@ public class PacStudentController : MonoBehaviour
         audioSource = player.GetComponent<AudioSource>();
         CherryController = GameObject.FindWithTag("CherryController");
         gameController = GameObject.FindWithTag("GameController");
+        HUD = GameObject.FindGameObjectWithTag("HUD");
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetMovementInput();
-        if (!isTweening)
+        if (HUD.GetComponent<UIManager>().countDownDone)
         {
-            CheckNextMove();
+            GetMovementInput();
+            if (!isTweening)
+            {
+                CheckNextMove();
+            }
         }
     }
     void GetMovementInput()
