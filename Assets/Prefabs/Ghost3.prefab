@@ -277,7 +277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ghost 3
+  m_text: 3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9e5206de39765f243949ba2aae9d3017, type: 2}
   m_sharedMaterial: {fileID: 2880325257276882927, guid: 9e5206de39765f243949ba2aae9d3017, type: 2}
