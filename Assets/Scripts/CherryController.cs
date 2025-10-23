@@ -14,8 +14,9 @@ public class CherryController : MonoBehaviour
     {
         StartCoroutine(CherrySpawner());
     }
-    void KillCrystal(GameObject crystal)
+    public void KillCrystal(GameObject crystal)
     {
+        StopAllCoroutines();
         Destroy(crystal);
         StartCoroutine(CherrySpawner());
     }
@@ -56,7 +57,7 @@ public class CherryController : MonoBehaviour
     StartCoroutine(MoveCherry(spawnedCrystal, 20f, spawnPoint, endPoint));
 }
 
-    IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos ,Vector3 endPos)
+    IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos, Vector3 endPos)
     {
         float timeElapsed = 0f;
         while (timeElapsed < duration)

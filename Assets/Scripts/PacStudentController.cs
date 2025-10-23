@@ -5,7 +5,10 @@ using UnityEngine.Tilemaps;
 
 public class PacStudentController : MonoBehaviour
 {
-    public bool wallHit = false;
+    private GameObject gameController;
+    private GameObject CherryController;
+    public ParticleSystem wallHitEffect;
+    private bool wallHit = false;
     public Tween currentTween;
     private GameObject player;
     private Animator aniController;
@@ -20,6 +23,9 @@ public class PacStudentController : MonoBehaviour
     public AudioClip walkingEating;
     public AudioClip hitWall;
     public AudioSource audioSource;
+    public Vector3 spawnPoint;
+
+    public float walkSpeed = 0.4f;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +34,8 @@ public class PacStudentController : MonoBehaviour
         levelGen = GameObject.FindWithTag("LevelGenerator");
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
         audioSource = player.GetComponent<AudioSource>();
+        CherryController = GameObject.FindWithTag("CherryController");
+        gameController = GameObject.FindWithTag("GameController");
     }
 
     // Update is called once per frame
@@ -47,40 +55,44 @@ public class PacStudentController : MonoBehaviour
         if (Input.GetAxis("Horizontal") < 0)
         {
             lastInput = "left";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, -90f));
         }
         else if (Input.GetAxis("Horizontal") > 0)
         {
             lastInput = "right";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
         }
         else if (Input.GetAxis("Vertical") < 0)
         {
             lastInput = "down";
+            wallHitEffect.transform.rotation = Quaternion.identity;
         }
         else if (Input.GetAxis("Vertical") > 0)
         {
             lastInput = "up";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
         }
     }
     void UpdatePlayer(string direction, Vector3 endpos)
     {
         if (direction == "up")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "up"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "up"));
             aniController.SetInteger("Direction", 3);
         }
         else if (direction == "down")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "down"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "down"));
             aniController.SetInteger("Direction", 1);
         }
         else if (direction == "left")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "left"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "left"));
             aniController.SetInteger("Direction", 2);
         }
         else if (direction == "right")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "right"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "right"));
             aniController.SetInteger("Direction", 0);
         }
     }
@@ -122,6 +134,7 @@ public class PacStudentController : MonoBehaviour
                 audioSource.clip = walkingEating;
                 audioSource.Play();
                 wallHit = false;
+                tileMap[nextPos] = "Empty";
             }
             else
             {
@@ -156,6 +169,7 @@ public class PacStudentController : MonoBehaviour
                     audioSource.clip = walkingEating;
                     audioSource.Play();
                     wallHit = false;
+                    tileMap[nextPos] = "Empty";
                 }
                 else
                 {
@@ -170,6 +184,7 @@ public class PacStudentController : MonoBehaviour
                     audioSource.clip = hitWall;
                     audioSource.Play();
                     wallHit = true;
+                    wallHitEffect.Play();
                 }
             }
         }
@@ -188,5 +203,39 @@ public class PacStudentController : MonoBehaviour
         player.transform.position = endPos;
         isTweening = false;
         lastInput = direction;
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("TeleRight"))
+        {
+            StopAllCoroutines();
+            isTweening = false;
+            StartCoroutine(ReenableCollider());
+            player.transform.position = new Vector3(0f, -4.54f, 0);
+        } else if (other.CompareTag("TeleLeft"))
+        {
+            StopAllCoroutines();
+            isTweening = false;
+            StartCoroutine(ReenableCollider());
+            player.transform.position = new Vector3(8.639999389648438f, -4.54f, 0);
+        }else if (other.CompareTag("BonusCrystal"))
+        {
+            CherryController.GetComponent<CherryController>().KillCrystal(other.gameObject);
+            gameController.GetComponent<ScoreManager>().currentScore += 100;
+        }else if (other.CompareTag("PowerPellet"))
+        {
+            Destroy(other.gameObject);
+            gameController.GetComponent<ScoreManager>().currentScore += 50;
+        }else if (other.CompareTag("Pellet") && lastInput!=null)
+        {
+            Destroy(other.gameObject);
+            gameController.GetComponent<ScoreManager>().currentScore += 10;
+        }
+    }
+    IEnumerator ReenableCollider()
+    {
+        player.GetComponent<BoxCollider>().enabled = false;
+        yield return new WaitForSeconds(1f);
+        player.GetComponent<BoxCollider>().enabled = true;
     }
 }

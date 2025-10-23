@@ -8,6 +8,11 @@ TagManager:
   - Level
   - MobManager
   - BonusCrystal
+  - TeleLeft
+  - TeleRight
+  - CherryController
+  - Pellet
+  - PowerPellet
   layers:
   - Default
   - TransparentFX

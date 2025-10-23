@@ -379,6 +379,10 @@ public class LevelGeneratort : MonoBehaviour
                 if (y == 1 && x == 1)
                 {
                     player.transform.position = transformPos;
+                    if (player.GetComponent<PacStudentController>().spawnPoint == null)
+                    {
+                        player.GetComponent<PacStudentController>().spawnPoint = transformPos;
+                    }
                 }
                 if (mapBlueprint[y, x] == 0 )
                 {
