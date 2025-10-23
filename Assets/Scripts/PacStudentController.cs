@@ -37,14 +37,15 @@ public class PacStudentController : MonoBehaviour
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
         audioSource = player.GetComponent<AudioSource>();
         CherryController = GameObject.FindWithTag("CherryController");
-        gameController = GameObject.FindWithTag("GameController");
+        gameController = GameObject.FindWithTag("LevelGenerator");
         HUD = GameObject.FindGameObjectWithTag("HUD");
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (HUD.GetComponent<UIManager>().countDownDone)
+        if (HUD.GetComponent<UIManager>().countDownDone && !HUD.GetComponent<UIManager>().gameOver)
         {
             GetMovementInput();
             if (!isTweening)
@@ -246,26 +247,28 @@ public class PacStudentController : MonoBehaviour
         else if (other.CompareTag("BonusCrystal"))
         {
             CherryController.GetComponent<CherryController>().KillCrystal(other.gameObject);
-            gameController.GetComponent<ScoreManager>().currentScore += 100;
+            gameController.GetComponent<GameStateController>().currentScore += 100;
         }
         else if (other.CompareTag("PowerPellet"))
         {
             Destroy(other.gameObject);
-            gameController.GetComponent<ScoreManager>().currentScore += 50;
+            gameController.GetComponent<GameStateController>().currentScore += 50;
+            gameController.GetComponent<GameStateController>().totalPellets--;
         }
         else if (other.CompareTag("Pellet") && lastInput != null)
         {
             Destroy(other.gameObject);
-            gameController.GetComponent<ScoreManager>().currentScore += 10;
+            gameController.GetComponent<GameStateController>().currentScore += 10;
+            gameController.GetComponent<GameStateController>().totalPellets--;
         }
         
         if(other.CompareTag("Ghost") && !isBuffed)
         {
-            gameController.GetComponent<ScoreManager>().lives -= 1;
+            gameController.GetComponent<GameStateController>().lives -= 1;
             aniController.SetTrigger("isDead");
         }else if(other.CompareTag("Ghost") && isBuffed)
         {
-            gameController.GetComponent<ScoreManager>().currentScore += 300;
+            gameController.GetComponent<GameStateController>().currentScore += 300;
             other.GetComponent<GhostController>().Die();
         }
     }

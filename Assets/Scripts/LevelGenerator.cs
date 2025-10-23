@@ -9,13 +9,14 @@ using Debug = UnityEngine.Debug;
 public class LevelGeneratort : MonoBehaviour
 {
     public List<GameObject> levelTiles = new List<GameObject>();
-    public GameObject map;
+    private GameObject map;
     public Dictionary<Vector3, string> tileMap = new Dictionary<Vector3, string>();
     public GameObject player;
     public GameObject ghost1;
     public GameObject ghost2;
     public GameObject ghost3;
     public GameObject ghost4;
+    private GameStateController scoreManager;
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -38,7 +39,9 @@ public class LevelGeneratort : MonoBehaviour
     };
     void Start()
     {
+        map = GameObject.FindWithTag("Level");
         player = GameObject.FindWithTag("Player");
+        scoreManager = gameObject.GetComponent<GameStateController>();
         DestroyCurrentMap(map);
         GenerateMap(levelMap);
     }
@@ -170,11 +173,13 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "Pellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 6)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "PowerPellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
@@ -399,12 +404,14 @@ public class LevelGeneratort : MonoBehaviour
                     
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "Pellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 6)
                 {
 
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     tileMap.Add(transformPos, "PowerPellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
@@ -583,11 +590,13 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     tileMap.Add(transformPos, "Pellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 6)
                 {
                     tileMap.Add(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
@@ -790,11 +799,13 @@ public class LevelGeneratort : MonoBehaviour
                 {
                     tileMap.Add(transformPos, "Pellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 6)
                 {
                     tileMap.Add(transformPos, "PowerPellet");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {

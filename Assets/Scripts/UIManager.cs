@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public bool gameOver = false;
     public GameObject scoreObj;
     private TextMeshProUGUI scoreText;
     public GameObject timeObj;
     private TextMeshProUGUI timeText;
-    public GameObject GameController;
-    private ScoreManager scoreManager;
+    private GameObject GameController;
+    private GameStateController scoreManager;
     public TextMeshProUGUI startGameText;
     public GameObject screenCoverUI;
     public bool countDownDone = false;
@@ -20,9 +20,10 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        GameController = GameObject.FindWithTag("LevelGenerator");
         scoreText = scoreObj.GetComponent<TextMeshProUGUI>();
         timeText = timeObj.GetComponent<TextMeshProUGUI>();
-        scoreManager = GameController.GetComponent<ScoreManager>();
+        scoreManager = GameController.GetComponent<GameStateController>();
         cherryController = GameObject.FindWithTag("CherryController");
         StartCoroutine(CountDown(screenCoverUI, startGameText));
     }

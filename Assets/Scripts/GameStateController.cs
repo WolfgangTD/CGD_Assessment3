@@ -12,12 +12,35 @@ public class GameStateController : MonoBehaviour
     private GameObject[] ghosts;
     private Coroutine deadStateRoutine;
     private float buffDuration = 10f;
+    public int totalPellets;
+    public int lives;
+    public float time;
+    public int currentScore;
     void Start()
     {
         player = GameObject.FindWithTag("Player");
         HUD = GameObject.FindGameObjectWithTag("HUD");
         audioController = GameObject.FindGameObjectWithTag("AudioManager");
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+        time = 0;
+        currentScore = 0;
+        lives = 3;
+    }
+    void Update()
+    {
+        if (HUD.GetComponent<UIManager>().countDownDone && !HUD.GetComponent<UIManager>().gameOver)
+        {
+            time += Time.deltaTime;
+            Debug.Log(totalPellets);
+        }
+        if (lives == 0 || totalPellets == 0)
+        {
+            GameOver();
+        }
+    }
+    void GameOver()
+    {
+        
     }
     public void StartBuffState()
     {
