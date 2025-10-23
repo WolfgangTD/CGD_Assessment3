@@ -5,49 +5,67 @@ using UnityEngine;
 
 public class CherryController : MonoBehaviour
 {
-    bool cherrySpawned = false;
     public GameObject bonusCrystal;
     public GameObject spawnedCrystal;
+    public SpriteMask mask;
     //spawn at x -0.3 or 8.9
     //y can be 0.35 to -9.35
     void Start()
     {
-        if (!cherrySpawned)
-        {
-            StartCoroutine(CountFiveSeconds());
-        }
+        StartCoroutine(CherrySpawner());
     }
-    void KillCrystal()
+    void KillCrystal(GameObject crystal)
     {
-        Destroy(spawnedCrystal);
-        StartCoroutine(CountFiveSeconds());
+        Destroy(crystal);
+        StartCoroutine(CherrySpawner());
     }
 
-    IEnumerator CountFiveSeconds()
+    IEnumerator CherrySpawner()
     {
-        Vector3 spawnPoint = new Vector3(-0.3f, 0.35f, 0f);
         yield return new WaitForSeconds(5f);
-        spawnedCrystal = Instantiate(bonusCrystal, spawnPoint, Quaternion.identity);
-        cherrySpawned = true;
-        StartCoroutine(MoveCherry(spawnedCrystal, 100f));
-    }
-    IEnumerator MoveCherry(GameObject cherry, float duration)
+
+        // Sprite mask world data
+        Vector2 maskCenter = new Vector2(4.33f, -4.46f);
+        float leftMax = -0.25f;
+        float rightMax = 8.95f;
+        float topMax = 0.4f;
+        float botMax = -9.4f;
+        // Randomly pick which side to spawn from
+        int side = Random.Range(0, 4);
+        Vector3 spawnPoint = Vector3.zero;
+        switch (side)
+        {
+            case 0: //up
+                spawnPoint = new Vector3(Random.Range(leftMax, rightMax), topMax);
+                break;
+
+            case 1: //down
+                spawnPoint = new Vector3(Random.Range(leftMax, rightMax), botMax);
+                break;
+            case 2: //left
+                spawnPoint = new Vector3(leftMax, Random.Range(botMax, topMax));
+                break;
+            case 3: //right
+                spawnPoint = new Vector3(rightMax, Random.Range(botMax, topMax));
+                break;
+        }
+    Vector3 endPoint = (Vector3)(2 * maskCenter - (Vector2)spawnPoint);
+
+    spawnedCrystal = Instantiate(bonusCrystal, spawnPoint, Quaternion.identity);
+
+    StartCoroutine(MoveCherry(spawnedCrystal, 10f, spawnPoint, endPoint));
+}
+
+    IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos ,Vector3 endPos)
     {
-        Vector3 endPos = new Vector3(8.9f, -9.35f, 0f);
         float timeElapsed = 0f;
         while (timeElapsed < duration)
         {
             float timeLen = timeElapsed / duration;
-            cherry.transform.position = Vector3.Lerp(cherry.transform.position, endPos, timeLen);
-            
-            if (!cherry.GetComponent<Renderer>().isVisible)
-            {
-                KillCrystal();
-                break;
-            }
+            cherry.transform.position = Vector3.Lerp(startPos, endPos, timeLen);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-        
+        KillCrystal(cherry);
     }
 }
