@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
@@ -30,6 +31,7 @@ public class GhostController : MonoBehaviour
 
     public void Die()
     {
+        StopAllCoroutines();
         float timeAdj = playerCont.buffTime;
         if (state == 1)
         {
@@ -56,6 +58,7 @@ public class GhostController : MonoBehaviour
         state = 2;
         animator.SetTrigger("goToRecovery");
         yield return new WaitForSeconds(3f); 
+        animator.SetTrigger("playerNotBuffed");
     }
     private IEnumerator HandleDeath3()
     {
@@ -67,6 +70,7 @@ public class GhostController : MonoBehaviour
         state = 2;
         animator.SetTrigger("goToRecovery");
         yield return new WaitForSeconds(timeLeft); 
+        animator.SetTrigger("playerNotBuffed");
     }
     private IEnumerator HandleDeath2()
     {
@@ -85,18 +89,16 @@ public class GhostController : MonoBehaviour
         animator.SetTrigger("playerBuffed");
 
         yield return new WaitForSeconds(scaredFor);
-        if (state != 3)
-        {
-            // Recovery phase
-            state = 2;
-            animator.SetTrigger("goToRecovery");
-            yield return new WaitForSeconds(recoveringFor);
-        }
-        if (state != 3)
-        {
-             // Normal
-            state = 0;
-            animator.SetTrigger("playerNotBuffed");
-        }
+
+        //warning
+        state = 2;
+        animator.SetTrigger("goToRecovery");
+        yield return new WaitForSeconds(recoveringFor);
+        
+
+        // Normal
+        state = 0;
+        animator.SetTrigger("playerNotBuffed");
+        
     }
 }
