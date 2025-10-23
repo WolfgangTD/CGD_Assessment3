@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class GameStateController : MonoBehaviour
 {
+    public bool gameOver = false;
     private GameObject player;
     private GameObject HUD;
     private GameObject audioController;
-    private ScoreManager scoreManager;
     private GameObject[] ghosts;
     private Coroutine deadStateRoutine;
     private float buffDuration = 10f;
@@ -28,19 +28,24 @@ public class GameStateController : MonoBehaviour
     }
     void Update()
     {
-        if (HUD.GetComponent<UIManager>().countDownDone && !HUD.GetComponent<UIManager>().gameOver)
+        if (HUD.GetComponent<UIManager>().countDownDone && !gameOver)
         {
             time += Time.deltaTime;
             Debug.Log(totalPellets);
         }
-        if (lives == 0 || totalPellets == 0)
+        if (lives == 0 || totalPellets <= 0)
         {
             GameOver();
         }
     }
     void GameOver()
     {
-        
+        GameObject gameController = GameObject.FindWithTag("GameController");
+        ScoreManager sm = gameController.GetComponent<ScoreManager>();
+        if(currentScore > sm.highScore)
+        {
+            sm.SetNewScore(currentScore, time);
+        }
     }
     public void StartBuffState()
     {

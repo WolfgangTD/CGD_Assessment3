@@ -16,6 +16,7 @@ TagManager:
   - HUD
   - AudioManager
   - Ghost
+  - GameManager
   layers:
   - Default
   - TransparentFX

@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public bool gameOver = false;
     public GameObject scoreObj;
     private TextMeshProUGUI scoreText;
     public GameObject timeObj;

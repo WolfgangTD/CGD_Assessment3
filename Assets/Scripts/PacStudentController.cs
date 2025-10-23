@@ -45,7 +45,7 @@ public class PacStudentController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (HUD.GetComponent<UIManager>().countDownDone && !HUD.GetComponent<UIManager>().gameOver)
+        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
             GetMovementInput();
             if (!isTweening)
