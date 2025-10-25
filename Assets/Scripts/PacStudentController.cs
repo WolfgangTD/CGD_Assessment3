@@ -8,6 +8,7 @@ public class PacStudentController : MonoBehaviour
     private GameObject gameController;
     private GameObject CherryController;
     public ParticleSystem wallHitEffect;
+    public ParticleSystem deathEffect;
     private bool wallHit = false;
     public Tween currentTween;
     private GameObject player;
@@ -56,6 +57,26 @@ public class PacStudentController : MonoBehaviour
                 CheckNextMove();
             }
         }
+    }
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        currentInput = null;
+        lastInput = null;
+        isTweening = false;
+        movement = Vector3.zero;
+        audioSource.Stop();
+    }
+    public void ResetGame()
+    {
+        StopMovement();
+        StartCoroutine(DeadMode(1)); 
+    }
+    IEnumerator DeadMode(int secs)
+    {
+        yield return new WaitForSeconds(secs);
+        player.transform.position = spawnPoint;
+        aniController.SetTrigger("reset");
     }
     void GetMovementInput()
     {
@@ -272,11 +293,13 @@ public class PacStudentController : MonoBehaviour
             GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
             HUDLives[livesLeft-1].SetActive(false);
             livesLeft --;
+            deathEffect.Play();
             aniController.SetTrigger("isDead");
+            ResetGame();
         }else if(other.CompareTag("Ghost") && isBuffed)
         {
             gameController.GetComponent<GameStateController>().currentScore += 300;
-            other.GetComponent<GhostController>().Die();
+            other.GetComponent<GhostStateManager>().Die();
         }
     }
     IEnumerator ReenableCollider()
@@ -285,6 +308,7 @@ public class PacStudentController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         player.GetComponent<BoxCollider>().enabled = true;
     }
+    
     IEnumerator BuffCounter()
     {
         while (buffTime < 10f)

@@ -166,7 +166,11 @@ public class LevelGeneratort : MonoBehaviour
                     tileMap.Add(transformPos, "Empty");
                     if(mapBlueprint[y-1, x] == 8)
                     {
-                        ghost2.transform.position = transformPos;
+                        ghost3.transform.position = transformPos;
+                        if (ghost3.GetComponent<GhostController>().spawnPoint3 != transformPos)
+                        {
+                            ghost3.GetComponent<GhostController>().spawnPoint3 = transformPos;
+                        }
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -384,7 +388,7 @@ public class LevelGeneratort : MonoBehaviour
                 if (y == 1 && x == 1)
                 {
                     player.transform.position = transformPos;
-                    if (player.GetComponent<PacStudentController>().spawnPoint == null)
+                    if (player.GetComponent<PacStudentController>().spawnPoint != transformPos)
                     {
                         player.GetComponent<PacStudentController>().spawnPoint = transformPos;
                     }
@@ -397,6 +401,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost1.transform.position = transformPos;
+                        if (ghost1.GetComponent<GhostController>().spawnPoint1 != transformPos)
+                        {
+                            ghost1.GetComponent<GhostController>().spawnPoint1 = transformPos;
+                        }
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -583,7 +591,11 @@ public class LevelGeneratort : MonoBehaviour
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
                     if(mapBlueprint[y-1, x] == 8)
                     {
-                        ghost3.transform.position = transformPos;
+                        ghost2.transform.position = transformPos;
+                        if (ghost2.GetComponent<GhostController>().spawnPoint2 != transformPos)
+                        {
+                            ghost2.GetComponent<GhostController>().spawnPoint2 = transformPos;
+                        }
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -793,6 +805,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost4.transform.position = transformPos;
+                        if (ghost4.GetComponent<GhostController>().spawnPoint4 != transformPos)
+                        {
+                            ghost4.GetComponent<GhostController>().spawnPoint4 = transformPos;
+                        }
                     }
                 }
                 if (mapBlueprint[y, x] == 5)

@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     public GameObject timeObj;
     private TextMeshProUGUI timeText;
     private GameObject GameController;
+    public GameObject GhostScareTimer;
+    public TextMeshProUGUI GhostScareTimerText;
     private GameStateController scoreManager;
     public TextMeshProUGUI startGameText;
     public GameObject screenCoverUI;
@@ -47,12 +49,12 @@ public class UIManager : MonoBehaviour
     public void EndGame()
     {
         StartCoroutine(CountDownGameOver(screenCoverUI, startGameText));
-        lc.LoadLevel0();
+        
     }
-
 
     IEnumerator CountDown(GameObject screenCoverUI, TextMeshProUGUI startGameText)
     {
+        GhostScareTimer.SetActive(false);
         int countdownTime=3;
         while (countdownTime >= 0)
         {
@@ -79,5 +81,22 @@ public class UIManager : MonoBehaviour
         startGameText.text = "Game Over!";
             
         yield return new WaitForSeconds(3);
+        lc.LoadLevel0();
+    }
+    public void StartGhostTimer()
+    {
+        StartCoroutine(GhostTimer());
+    }
+    IEnumerator GhostTimer()
+    {
+        GhostScareTimer.SetActive(true);
+        int countdownTime=10;
+        while (countdownTime > 0)
+        {
+            GhostScareTimerText.text = $"Ghost Scared Timer:\n{countdownTime:00}";
+            yield return new WaitForSeconds(1);
+            countdownTime--;
+        }
+        GhostScareTimer.SetActive(false);
     }
 }

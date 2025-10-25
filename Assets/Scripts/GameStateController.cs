@@ -45,17 +45,20 @@ public class GameStateController : MonoBehaviour
         ScoreManager sm = gameController.GetComponent<ScoreManager>();
         gameOver = true;
         cherryController.GetComponent<CherryController>().StopAllCoroutines();
+        player.GetComponent<PacStudentController>().StopMovement();
         if(currentScore > PlayerPrefs.GetInt("HIGHSCORE") || (currentScore == PlayerPrefs.GetInt("HIGHSCORE") && time < PlayerPrefs.GetInt("HIGHSCORE_TIME")))
         {
             sm.SetNewScore(currentScore, time);
         }
         HUD.GetComponent<UIManager>().EndGame();
     }
+    
     public void StartBuffState()
     {
+        HUD.GetComponent<UIManager>().StartGhostTimer();
         foreach(GameObject ghost in ghosts)
         {
-            ghost.GetComponent<GhostController>().Scared();
+            ghost.GetComponent<GhostStateManager>().Scared();
         }
         StartCoroutine(SoundManaging());
     }
@@ -70,7 +73,7 @@ public class GameStateController : MonoBehaviour
         {
             allNormal = 0;
             for(int i = 0; i < ghosts.Length; i++){
-                if (ghosts[i].GetComponent<GhostController>().state == 3)
+                if (ghosts[i].GetComponent<GhostStateManager>().state == 3)
                 {
                     ghostsToWatch.Add(ghosts[i]);
                     if (!anyGhostDead)
@@ -84,7 +87,7 @@ public class GameStateController : MonoBehaviour
                     audioController.GetComponent<SoundController>().ScaredState();
                     anyGhostDead = false;
                 }
-                if (ghosts[i].GetComponent<GhostController>().state == 0)
+                if (ghosts[i].GetComponent<GhostStateManager>().state == 0)
                 {
                     allNormal ++;
                 }
