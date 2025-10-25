@@ -11,6 +11,7 @@ public class PacStudentController : MonoBehaviour
     private bool wallHit = false;
     public Tween currentTween;
     private GameObject player;
+    public int livesLeft;
     private Animator aniController;
     private string lastInput;
     private string currentInput;
@@ -32,6 +33,7 @@ public class PacStudentController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        livesLeft = 3;
         player = gameObject;
         aniController = GetComponent<Animator>();
         levelGen = GameObject.FindWithTag("LevelGenerator");
@@ -267,7 +269,9 @@ public class PacStudentController : MonoBehaviour
         
         if(other.CompareTag("Ghost") && !isBuffed)
         {
-            gameController.GetComponent<GameStateController>().lives -= 1;
+            GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
+            HUDLives[livesLeft-1].SetActive(false);
+            livesLeft --;
             aniController.SetTrigger("isDead");
         }else if(other.CompareTag("Ghost") && isBuffed)
         {

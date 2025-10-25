@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2728397118076600223}
   - component: {fileID: 5272258093208915296}
   - component: {fileID: 9034557745620238079}
+  - component: {fileID: 2697927125305375350}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -4953,6 +4954,9 @@ MonoBehaviour:
   walkingEating: {fileID: 8300000, guid: a82a70c2e2cda5a40a4191104f286027, type: 3}
   hitWall: {fileID: 8300000, guid: e8fa82d32ff68ba479ebc09b548b4dea, type: 3}
   audioSource: {fileID: 0}
+  spawnPoint: {x: 0, y: 0, z: 0}
+  isBuffed: 0
+  buffTime: 0
   walkSpeed: 0.4
 --- !u!199 &5272258093208915296
 ParticleSystemRenderer:
@@ -5052,11 +5056,32 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &2697927125305375350
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 237009028277502637}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.27531555, y: 0.24696726, z: 0.2}
+  m_Center: {x: 0.00047539175, y: -0.016597927, z: 0}
 --- !u!1 &7959018885495236906
 GameObject:
   m_ObjectHideFlags: 0
@@ -5280,7 +5305,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.4009434, b: 0.68122673, a: 1}
+      maxColor: {r: 0.16078432, g: 0.15686275, b: 0.12941177, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -6365,7 +6390,7 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0.41037738, b: 0.41037738, a: 1}
+        key0: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -6395,7 +6420,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
       minGradient:
         serializedVersion: 2
-        key0: {r: 0.3301887, g: 0.0015574975, b: 0.15108247, a: 1}
+        key0: {r: 0.7254902, g: 0.7254902, b: 0.7254902, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}

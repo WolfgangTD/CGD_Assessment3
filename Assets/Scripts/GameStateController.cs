@@ -9,6 +9,7 @@ public class GameStateController : MonoBehaviour
     private GameObject player;
     private GameObject HUD;
     private GameObject audioController;
+    private GameObject cherryController;
     private GameObject[] ghosts;
     public int totalPellets;
     public int lives;
@@ -17,12 +18,13 @@ public class GameStateController : MonoBehaviour
     void Start()
     {
         player = GameObject.FindWithTag("Player");
+        cherryController = GameObject.FindWithTag("CherryController");
         HUD = GameObject.FindGameObjectWithTag("HUD");
         audioController = GameObject.FindGameObjectWithTag("AudioManager");
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         time = 0;
         currentScore = 0;
-        lives = 3;
+        lives = player.GetComponent<PacStudentController>().livesLeft;
     }
     void Update()
     {
@@ -39,14 +41,14 @@ public class GameStateController : MonoBehaviour
     void GameOver()
     {
         GameObject gameController = GameObject.FindWithTag("GameController");
-        GameObject levelController = GameObject.FindWithTag("LevelController");
         ScoreManager sm = gameController.GetComponent<ScoreManager>();
-        LevelController lc = levelController.GetComponent<LevelController>();
-        if(currentScore > PlayerPrefs.GetInt("HIGHSCORE"))
+        gameOver = true;
+        cherryController.GetComponent<CherryController>().StopAllCoroutines();
+        if(currentScore > PlayerPrefs.GetInt("HIGHSCORE") || (currentScore == PlayerPrefs.GetInt("HIGHSCORE") && time < PlayerPrefs.GetInt("HIGHSCORE_TIME")))
         {
             sm.SetNewScore(currentScore, time);
-            lc.LoadLevel0();
         }
+        HUD.GetComponent<UIManager>().EndGame();
     }
     public void StartBuffState()
     {

@@ -257,7 +257,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -275,6 +275,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0eae4668bdb1bd499e36d4d86d98877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scaredFor: 7
+  recoveringFor: 3
+  deadFor: 3
+  state: 0
+  isDead: 0
 --- !u!1 &5890959765167589152
 GameObject:
   m_ObjectHideFlags: 0

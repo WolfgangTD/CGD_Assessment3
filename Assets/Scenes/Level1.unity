@@ -9105,7 +9105,7 @@ GameObject:
   - component: {fileID: 297481488}
   - component: {fileID: 297481487}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: Health2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18803,18 +18803,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ghost2
       objectReference: {fileID: 0}
-    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
-      propertyPath: m_Size.x
-      value: 0.15724637
-      objectReference: {fileID: 0}
-    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
-      propertyPath: m_Size.y
-      value: 0.29859477
-      objectReference: {fileID: 0}
-    - target: {fileID: 1609888778626115176, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2039116925015425789, guid: 12c625f8ee098ff4bbd08d6874ffdd45, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.362
@@ -22488,9 +22476,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1643796751}
-  - {fileID: 297481486}
   - {fileID: 2025644573}
+  - {fileID: 297481486}
+  - {fileID: 1643796751}
   m_Father: {fileID: 1540507868}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
@@ -24888,18 +24876,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
-      propertyPath: m_Size.x
-      value: 0.15724637
-      objectReference: {fileID: 0}
-    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
-      propertyPath: m_Size.y
-      value: 0.29859477
-      objectReference: {fileID: 0}
-    - target: {fileID: -5531491595050943642, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2472326775360730803, guid: 2beb9a9e896b1be4093f0f9e146fdd5a, type: 3}
       propertyPath: m_Name
       value: Ghost3
@@ -33717,53 +33693,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: InitialModule.startColor.maxColor.b
-      value: 0.12941177
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.15686275
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.16078432
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.maxGradient.key0.b
-      value: 0.0627451
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.maxGradient.key0.g
-      value: 0.0627451
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.maxGradient.key0.r
-      value: 0.0627451
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.minGradient.key0.b
-      value: 0.7254902
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.minGradient.key0.g
-      value: 0.7254902
-      objectReference: {fileID: 0}
-    - target: {fileID: 6006414712914848227, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: ColorModule.gradient.minGradient.key0.r
-      value: 0.7254902
-      objectReference: {fileID: 0}
-    - target: {fileID: 9034557745620238079, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      propertyPath: m_UseGravity
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 237009028277502637, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1222952414}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
 --- !u!1 &1081169161
 GameObject:
@@ -38460,32 +38393,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5283044068721644066, guid: 5bcfe3aec85f17547aaca6cd467b5f71, type: 3}
   m_PrefabInstance: {fileID: 1222855722}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1222952405 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 237009028277502637, guid: 2d54b8f638c780b4b8856f8a1285f03a, type: 3}
-  m_PrefabInstance: {fileID: 1077875782}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1222952414
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1222952405}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.27531555, y: 0.24696726, z: 0.2}
-  m_Center: {x: 0.00047539175, y: -0.016597927, z: 0}
 --- !u!1001 &1226674477
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46676,6 +46583,10 @@ MonoBehaviour:
   startGameText: {fileID: 382636490}
   screenCoverUI: {fileID: 1707697479}
   countDownDone: 0
+  lives:
+  - {fileID: 2025644572}
+  - {fileID: 297481485}
+  - {fileID: 1643796750}
 --- !u!1 &1542851933
 GameObject:
   m_ObjectHideFlags: 0
@@ -49703,7 +49614,7 @@ GameObject:
   - component: {fileID: 1643796753}
   - component: {fileID: 1643796752}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Health3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51077,7 +50988,7 @@ GameObject:
   - component: {fileID: 1707697480}
   - component: {fileID: 1707697482}
   m_Layer: 5
-  m_Name: CountDown
+  m_Name: CountDownStart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61105,7 +61016,7 @@ GameObject:
   - component: {fileID: 2025644575}
   - component: {fileID: 2025644574}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Health1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

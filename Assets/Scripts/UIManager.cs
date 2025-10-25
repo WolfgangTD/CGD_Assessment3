@@ -16,10 +16,15 @@ public class UIManager : MonoBehaviour
     public GameObject screenCoverUI;
     public bool countDownDone = false;
     private GameObject cherryController;
-
+    public GameObject[] lives;
+    GameObject levelController;
+    LevelController lc;
+        
     void Start()
     {
         GameController = GameObject.FindWithTag("LevelGenerator");
+        lc = levelController.GetComponent<LevelController>();
+        levelController = GameObject.FindWithTag("LevelController");
         scoreText = scoreObj.GetComponent<TextMeshProUGUI>();
         timeText = timeObj.GetComponent<TextMeshProUGUI>();
         scoreManager = GameController.GetComponent<GameStateController>();
@@ -38,6 +43,13 @@ public class UIManager : MonoBehaviour
 
         timeText.text = $"Time: {mins:00}:{secs:00}:{millisecs:00}";
     }
+
+    public void EndGame()
+    {
+        StartCoroutine(CountDownGameOver(screenCoverUI, startGameText));
+        lc.LoadLevel0();
+    }
+
 
     IEnumerator CountDown(GameObject screenCoverUI, TextMeshProUGUI startGameText)
     {
@@ -58,5 +70,14 @@ public class UIManager : MonoBehaviour
         screenCoverUI.SetActive(false);
         countDownDone = true;
         StartCoroutine(cherryController.GetComponent<CherryController>().CherrySpawner());
+    }
+    IEnumerator CountDownGameOver(GameObject screenCoverUI, TextMeshProUGUI startGameText)
+    {
+        countDownDone = false;
+        screenCoverUI.SetActive(true);
+
+        startGameText.text = "Game Over!";
+            
+        yield return new WaitForSeconds(3);
     }
 }
