@@ -23,8 +23,8 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         GameController = GameObject.FindWithTag("LevelGenerator");
-        lc = levelController.GetComponent<LevelController>();
         levelController = GameObject.FindWithTag("LevelController");
+        lc = levelController.GetComponent<LevelController>();
         scoreText = scoreObj.GetComponent<TextMeshProUGUI>();
         timeText = timeObj.GetComponent<TextMeshProUGUI>();
         scoreManager = GameController.GetComponent<GameStateController>();

@@ -6,6 +6,8 @@ public class SoundController : MonoBehaviour
 {
 	public AudioSource audioSource;
 	public AudioClip loopSound;
+	public AudioClip scaredSound;
+	public AudioClip deadSound;
 	private float startTime;
 	private GameObject HUD;
 
@@ -15,6 +17,25 @@ public class SoundController : MonoBehaviour
 		HUD = GameObject.FindGameObjectWithTag("HUD");
 		StartCoroutine(Waiting());
 	}
+	public void ScaredState()
+    {
+        audioSource.clip = scaredSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }
+	public void DeadState()
+    {
+        audioSource.clip = deadSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }
+
+	public void BackToNormal()
+    {
+        audioSource.clip = loopSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }	
 	
 	IEnumerator Waiting()
 	{

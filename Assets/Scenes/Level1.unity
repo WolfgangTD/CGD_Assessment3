@@ -31729,6 +31729,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1024631270}
   loopSound: {fileID: 8300000, guid: 3b76fc5618c733c4f81da66b370ff0d1, type: 3}
+  scaredSound: {fileID: 8300000, guid: 3d0d56af135514045b231c6708f8f261, type: 3}
+  deadSound: {fileID: 8300000, guid: f88a1861129a56c4ab1e79ceca21bcf8, type: 3}
 --- !u!4 &1024631272
 Transform:
   m_ObjectHideFlags: 0

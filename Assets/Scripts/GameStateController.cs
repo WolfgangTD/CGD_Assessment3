@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Animations;
 using UnityEngine;
 
@@ -56,5 +57,40 @@ public class GameStateController : MonoBehaviour
         {
             ghost.GetComponent<GhostController>().Scared();
         }
+        StartCoroutine(SoundManaging());
+    }
+    IEnumerator SoundManaging()
+    {
+        audioController.GetComponent<SoundController>().ScaredState();
+        List<GameObject> ghostsToWatch = new List<GameObject>();
+        bool anyGhostDead = false;
+        int allNormal = 0;
+
+        while(allNormal != 4)
+        {
+            allNormal = 0;
+            for(int i = 0; i < ghosts.Length; i++){
+                if (ghosts[i].GetComponent<GhostController>().state == 3)
+                {
+                    ghostsToWatch.Add(ghosts[i]);
+                    if (!anyGhostDead)
+                    {
+                        audioController.GetComponent<SoundController>().DeadState();
+                        anyGhostDead = true;
+                    }
+                }
+                if (!ghostsToWatch.Any() && i == ghosts.Length)
+                {
+                    audioController.GetComponent<SoundController>().ScaredState();
+                    anyGhostDead = false;
+                }
+                if (ghosts[i].GetComponent<GhostController>().state == 0)
+                {
+                    allNormal ++;
+                }
+            }
+            yield return null;
+        }
+        audioController.GetComponent<SoundController>().BackToNormal();
     }
 }

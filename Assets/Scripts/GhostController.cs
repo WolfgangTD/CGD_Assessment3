@@ -58,6 +58,7 @@ public class GhostController : MonoBehaviour
         state = 2;
         animator.SetTrigger("goToRecovery");
         yield return new WaitForSeconds(3f); 
+        state = 0;
         animator.SetTrigger("playerNotBuffed");
     }
     private IEnumerator HandleDeath3()
@@ -70,6 +71,7 @@ public class GhostController : MonoBehaviour
         state = 2;
         animator.SetTrigger("goToRecovery");
         yield return new WaitForSeconds(timeLeft); 
+        state = 0;
         animator.SetTrigger("playerNotBuffed");
     }
     private IEnumerator HandleDeath2()
@@ -77,9 +79,8 @@ public class GhostController : MonoBehaviour
         state = 3; // dead
         animator.SetTrigger("isDead");
         yield return new WaitForSeconds(3f); 
-
         state = 0;
-        animator.SetTrigger("playerNotBuffed");
+        animator.SetTrigger("playerNotBuffed");     
     }
 
     
