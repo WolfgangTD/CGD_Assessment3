@@ -10,17 +10,14 @@ public class CherryController : MonoBehaviour
     public SpriteMask mask;
     //spawn at x -0.3 or 8.9
     //y can be 0.35 to -9.35
-    void Start()
+    public void KillCrystal(GameObject crystal)
     {
-        StartCoroutine(CherrySpawner());
-    }
-    void KillCrystal(GameObject crystal)
-    {
+        StopAllCoroutines();
         Destroy(crystal);
         StartCoroutine(CherrySpawner());
     }
 
-    IEnumerator CherrySpawner()
+    public IEnumerator CherrySpawner()
     {
         yield return new WaitForSeconds(5f);
 
@@ -56,7 +53,7 @@ public class CherryController : MonoBehaviour
     StartCoroutine(MoveCherry(spawnedCrystal, 20f, spawnPoint, endPoint));
 }
 
-    IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos ,Vector3 endPos)
+    IEnumerator MoveCherry(GameObject cherry, float duration, Vector3 startPos, Vector3 endPos)
     {
         float timeElapsed = 0f;
         while (timeElapsed < duration)

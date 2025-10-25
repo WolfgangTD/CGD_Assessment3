@@ -5,9 +5,14 @@ using UnityEngine.Tilemaps;
 
 public class PacStudentController : MonoBehaviour
 {
-    public bool wallHit = false;
+    private GameObject gameController;
+    private GameObject CherryController;
+    public ParticleSystem wallHitEffect;
+    public ParticleSystem deathEffect;
+    private bool wallHit = false;
     public Tween currentTween;
     private GameObject player;
+    public int livesLeft;
     private Animator aniController;
     private string lastInput;
     private string currentInput;
@@ -20,24 +25,58 @@ public class PacStudentController : MonoBehaviour
     public AudioClip walkingEating;
     public AudioClip hitWall;
     public AudioSource audioSource;
+    public Vector3 spawnPoint;
+    private GameObject HUD;
+    public bool isBuffed = false;
+    public float buffTime = 0f;
+
+    public float walkSpeed = 0.4f;
     // Start is called before the first frame update
     void Start()
     {
+        livesLeft = 3;
         player = gameObject;
         aniController = GetComponent<Animator>();
         levelGen = GameObject.FindWithTag("LevelGenerator");
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
         audioSource = player.GetComponent<AudioSource>();
+        CherryController = GameObject.FindWithTag("CherryController");
+        gameController = GameObject.FindWithTag("LevelGenerator");
+        HUD = GameObject.FindGameObjectWithTag("HUD");
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetMovementInput();
-        if (!isTweening)
+        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
-            CheckNextMove();
+            GetMovementInput();
+            if (!isTweening)
+            {
+                CheckNextMove();
+            }
         }
+    }
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        currentInput = null;
+        lastInput = null;
+        isTweening = false;
+        movement = Vector3.zero;
+        audioSource.Stop();
+    }
+    public void ResetGame()
+    {
+        StopMovement();
+        StartCoroutine(DeadMode(1)); 
+    }
+    IEnumerator DeadMode(int secs)
+    {
+        yield return new WaitForSeconds(secs);
+        player.transform.position = spawnPoint;
+        aniController.SetTrigger("reset");
     }
     void GetMovementInput()
     {
@@ -47,40 +86,44 @@ public class PacStudentController : MonoBehaviour
         if (Input.GetAxis("Horizontal") < 0)
         {
             lastInput = "left";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, -90f));
         }
         else if (Input.GetAxis("Horizontal") > 0)
         {
             lastInput = "right";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
         }
         else if (Input.GetAxis("Vertical") < 0)
         {
             lastInput = "down";
+            wallHitEffect.transform.rotation = Quaternion.identity;
         }
         else if (Input.GetAxis("Vertical") > 0)
         {
             lastInput = "up";
+            wallHitEffect.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
         }
     }
     void UpdatePlayer(string direction, Vector3 endpos)
     {
         if (direction == "up")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "up"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "up"));
             aniController.SetInteger("Direction", 3);
         }
         else if (direction == "down")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "down"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "down"));
             aniController.SetInteger("Direction", 1);
         }
         else if (direction == "left")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "left"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "left"));
             aniController.SetInteger("Direction", 2);
         }
         else if (direction == "right")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, 0.5f, "right"));
+            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "right"));
             aniController.SetInteger("Direction", 0);
         }
     }
@@ -117,11 +160,22 @@ public class PacStudentController : MonoBehaviour
         {
             UpdatePlayer(lastInput, nextPos);
             currentInput = lastInput;
-            if (tileType == "Pellet" || tileType == "PowerPellet")
+            if (tileType == "Pellet")
             {
                 audioSource.clip = walkingEating;
                 audioSource.Play();
                 wallHit = false;
+                tileMap[nextPos] = "Empty";
+                
+            } else if(tileType == "PowerPellet")
+            {
+                audioSource.clip = walkingEating;
+                audioSource.Play();
+                wallHit = false;
+                isBuffed = true;
+                gameController.GetComponent<GameStateController>().StartBuffState();
+                StartCoroutine(BuffCounter());
+                tileMap[nextPos] = "Empty";
             }
             else
             {
@@ -151,11 +205,21 @@ public class PacStudentController : MonoBehaviour
             if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
             {
                 UpdatePlayer(currentInput, nextPos);
-                if (tileType2 == "Pellet" || tileType2 == "PowerPellet")
+                if (tileType2 == "Pellet")
                 {
                     audioSource.clip = walkingEating;
                     audioSource.Play();
                     wallHit = false;
+                    tileMap[nextPos] = "Empty";
+                }else if(tileType2 == "PowerPellet")
+                {
+                    audioSource.clip = walkingEating;
+                    audioSource.Play();
+                    wallHit = false;
+                    isBuffed = true;
+                    gameController.GetComponent<GameStateController>().StartBuffState();
+                    StartCoroutine(BuffCounter());
+                    tileMap[nextPos] = "Empty";
                 }
                 else
                 {
@@ -170,6 +234,7 @@ public class PacStudentController : MonoBehaviour
                     audioSource.clip = hitWall;
                     audioSource.Play();
                     wallHit = true;
+                    wallHitEffect.Play();
                 }
             }
         }
@@ -188,5 +253,69 @@ public class PacStudentController : MonoBehaviour
         player.transform.position = endPos;
         isTweening = false;
         lastInput = direction;
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("TeleRight"))
+        {
+            StopAllCoroutines();
+            isTweening = false;
+            StartCoroutine(ReenableCollider());
+            player.transform.position = new Vector3(0f, -4.54f, 0);
+        }
+        else if (other.CompareTag("TeleLeft"))
+        {
+            StopAllCoroutines();
+            isTweening = false;
+            StartCoroutine(ReenableCollider());
+            player.transform.position = new Vector3(8.639999389648438f, -4.54f, 0);
+        }
+        else if (other.CompareTag("BonusCrystal"))
+        {
+            CherryController.GetComponent<CherryController>().KillCrystal(other.gameObject);
+            gameController.GetComponent<GameStateController>().currentScore += 100;
+        }
+        else if (other.CompareTag("PowerPellet"))
+        {
+            Destroy(other.gameObject);
+            gameController.GetComponent<GameStateController>().currentScore += 50;
+            gameController.GetComponent<GameStateController>().totalPellets--;
+        }
+        else if (other.CompareTag("Pellet") && lastInput != null)
+        {
+            Destroy(other.gameObject);
+            gameController.GetComponent<GameStateController>().currentScore += 10;
+            gameController.GetComponent<GameStateController>().totalPellets--;
+        }
+        
+        if(other.CompareTag("Ghost") && !isBuffed)
+        {
+            GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
+            HUDLives[livesLeft-1].SetActive(false);
+            livesLeft --;
+            deathEffect.Play();
+            aniController.SetTrigger("isDead");
+            ResetGame();
+        }else if(other.CompareTag("Ghost") && isBuffed)
+        {
+            gameController.GetComponent<GameStateController>().currentScore += 300;
+            other.GetComponent<GhostStateManager>().Die();
+        }
+    }
+    IEnumerator ReenableCollider()
+    {
+        player.GetComponent<BoxCollider>().enabled = false;
+        yield return new WaitForSeconds(1f);
+        player.GetComponent<BoxCollider>().enabled = true;
+    }
+    
+    IEnumerator BuffCounter()
+    {
+        while (buffTime < 10f)
+        {
+            buffTime++;
+            yield return null;
+        }
+        buffTime = 0f;
     }
 }

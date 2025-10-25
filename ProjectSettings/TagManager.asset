@@ -8,6 +8,16 @@ TagManager:
   - Level
   - MobManager
   - BonusCrystal
+  - TeleLeft
+  - TeleRight
+  - CherryController
+  - Pellet
+  - PowerPellet
+  - HUD
+  - AudioManager
+  - Ghost
+  - GameManager
+  - LevelController
   layers:
   - Default
   - TransparentFX
