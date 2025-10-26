@@ -11,14 +11,15 @@ public class GhostController : MonoBehaviour
     private GameObject HUD;
     public GameObject levelGen;
     public Vector3 spawnPoint;
+    private Vector3 closestSpawn;
     string direction;
     float stepSize = 0.32f;
-    public float walkSpeed = 0.36f;
+    float playerMoveSpeed = 0.4f;
+    public float walkSpeed;
     private GameObject player;
     Dictionary<Vector3, string> tileMap;
     private string currentDirection;
-    private int ghostState;
-    bool hasExitedSpawn = false;
+    public bool hasExitedSpawn = false;
     Vector3 lastTile;
     string lastDir;
     // Start is called before the first frame update
@@ -30,140 +31,79 @@ public class GhostController : MonoBehaviour
         ghostName = gameObject.name;
         player = GameObject.FindWithTag("Player");
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
-        ghostState = GetComponent<GhostStateManager>().state;
-        
+        walkSpeed = playerMoveSpeed*1.1f;
     }
     void StartGhosts()
     {
-        if (hasExitedSpawn)
+        if(!GetComponent<GhostStateManager>().isDead)
         {
-            if (ghostName == "Ghost1" || ghostState != 0)
+            if (!hasExitedSpawn)
             {
-                Ghost1Movement();
-            }else if(ghostName == "Ghost2" && ghostState == 0)
-            {
-                Ghost2Movement();
-            }else if(ghostName == "Ghost3" && ghostState == 0)
-            {
-                Ghost3Movement();
-            }else if(ghostName == "Ghost4" && ghostState == 0)
-            {
-                Ghost4Movement();
+                InitGhosts();
             }
-        } else
+            else if (hasExitedSpawn)
+            {
+                walkSpeed = playerMoveSpeed*1.1f;
+                if (ghostName == "Ghost1")
+                {
+                    Ghost1Movement();
+                }else if(ghostName == "Ghost2")
+                {
+                    Ghost2Movement();
+                }else if(ghostName == "Ghost3")
+                {
+                    Ghost3Movement();
+                }else if(ghostName == "Ghost4")
+                {
+                    Ghost4Movement();
+                }
+            }  
+        }
+        else if(GetComponent<GhostStateManager>().isDead)
         {
-            InitGhosts();
-            hasExitedSpawn = true;
+            BackToSpawn();
+            if(GetComponent<GhostStateManager>().isDead && gameObject.transform.position == closestSpawn)
+            {
+                ReviveGhost();
+            }
+        } 
+        else if(hasExitedSpawn && (GetComponent<GhostStateManager>().state == 1 || GetComponent<GhostStateManager>().state == 2))
+        {
+            walkSpeed = playerMoveSpeed*1.5f;
+            Ghost1Movement();
         }
     }
     void Update()
     {
-        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver && !isTweening)
-        {
-                StartGhosts();
-        }
-    }
-    void Ghost1Movement()
-    {
-        List<string> validDirs = GetValidDirections();
-        float currentDist = DistanceToPlayer(transform.position);
-
-        List<string> possibleDirs = new List<string>();
-        foreach (string dir in validDirs)
+        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
             
-            Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
-            float newDist = DistanceToPlayer(nextPos);
-            if (newDist >= currentDist && nextPos != lastTile)
+            if (!isTweening)
             {
-                if(lastDir == "up")
-                {
-                    if(dir == "up" || dir == "left" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                } else if(lastDir == "down")
-                {
-                    if(dir == "down" || dir == "left" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }else if(lastDir == "left")
-                {
-                    if(dir == "down" || dir == "left" || dir == "up")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }else if(lastDir == "right")
-                {
-                    if(dir == "down" || dir == "up" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }
+                StartGhosts();
+            }   
+        }
+    }
+   void BackToSpawn()
+    {
+        Vector3 currentPos = transform.position;
+        closestSpawn = levelGen.GetComponent<LevelGeneratort>().spawnPoints[0];
+        float minDist = Vector3.Distance(currentPos, closestSpawn);
+
+        foreach (Vector3 point in levelGen.GetComponent<LevelGeneratort>().spawnPoints)
+        {
+            float dist = Vector3.Distance(currentPos, point);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestSpawn = point;
             }
         }
 
-        if (possibleDirs.Count == 0)
-        {
-            possibleDirs = validDirs;
-        }
-        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
-        CheckNextMove();
-    }
-    void Ghost2Movement()
-    {
+
         List<string> validDirs = GetValidDirections();
-        float currentDist = DistanceToPlayer(transform.position);
+        Vector3 lastPos = lastTile;
 
-        List<string> possibleDirs = new List<string>();
-        foreach (string dir in validDirs)
-        {
-            Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
-            float newDist = DistanceToPlayer(nextPos);
-            if (newDist <= currentDist && nextPos != lastTile)
-            {
-                if(lastDir == "up")
-                {
-                    if(dir == "up" || dir == "left" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                } else if(lastDir == "down")
-                {
-                    if(dir == "down" || dir == "left" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }else if(lastDir == "left")
-                {
-                    if(dir == "down" || dir == "left" || dir == "up")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }else if(lastDir == "right")
-                {
-                    if(dir == "down" || dir == "up" || dir == "right")
-                    {
-                        possibleDirs.Add(dir);
-                    }
-                }
-            }
-        }
-
-        if (possibleDirs.Count == 0)
-            possibleDirs = validDirs;
-
-        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
-        CheckNextMove();
-    }
-    void Ghost3Movement()
-    {
-        List<string> validDirs = GetValidDirections();
-        if (validDirs == null || validDirs.Count == 0)
-            return;
-
-        // Determine opposite of lastDir (the "backtrack" direction we want to forbid)
         string oppositeDir = null;
         switch (lastDir)
         {
@@ -173,17 +113,185 @@ public class GhostController : MonoBehaviour
             case "right": oppositeDir = "left"; break;
         }
 
-        // Remove the opposite/backtrack direction if there are other options available.
-        // If there's only one valid direction, keep it (so the ghost won't get stuck).
         if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
         {
             validDirs.Remove(oppositeDir);
         }
 
-        // Also prefer not to go to the lastTile (the tile we just came from) if alternatives exist
+        List<string> possibleDirs = new List<string>();
+        float currentDist = Vector3.Distance(currentPos, closestSpawn);
+
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+            float newDist = DistanceToSpawn(nextPos);
+            if (newDist < currentDist && nextPos != lastPos)
+            {
+                possibleDirs.Add(dir);
+            }
+        }
+
+        if (possibleDirs.Count == 0)
+        {
+            float closestDist = float.MaxValue;
+            string bestDir = validDirs[0];
+
+            foreach (string dir in validDirs)
+            {
+                Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+                float dist = DistanceToSpawn(nextPos);
+                if (dist < closestDist && nextPos != lastPos)
+                {
+                    closestDist = dist;
+                    bestDir = dir;
+                }
+            }
+
+            possibleDirs.Add(bestDir);
+        }
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+
+        if (!isTweening)
+        {
+            CheckNextMove();
+        }
+    }
+    void Ghost1Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        Vector3 currentPos = transform.position;
+        Vector3 lastPos = lastTile;
+
+        string oppositeDir = null;
+        switch (lastDir)
+        {
+            case "up": oppositeDir = "down"; break;
+            case "down": oppositeDir = "up"; break;
+            case "left": oppositeDir = "right"; break;
+            case "right": oppositeDir = "left"; break;
+        }
+
+        if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
+        {
+            validDirs.Remove(oppositeDir);
+        }
+
+        List<string> possibleDirs = new List<string>();
+        float currentDist = DistanceToPlayer(currentPos);
+
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+            float newDist = DistanceToPlayer(nextPos);
+            if (newDist >= currentDist && nextPos != lastPos)
+            {
+                possibleDirs.Add(dir);
+            }
+        }
+
+        if (possibleDirs.Count == 0)
+        {
+            float closestDist = float.MaxValue;
+            string bestDir = validDirs[0];
+
+            foreach (string dir in validDirs)
+            {
+                Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+                float dist = DistanceToSpawn(nextPos);
+                if (dist < closestDist && nextPos != lastPos)
+                {
+                    closestDist = dist;
+                    bestDir = dir;
+                }
+            }
+
+            possibleDirs.Add(bestDir);
+        }
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+
+        if (!isTweening)
+        {
+            CheckNextMove();
+        }
+    }
+    void Ghost2Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        Vector3 currentPos = transform.position;
+        Vector3 lastPos = lastTile;
+
+        string oppositeDir = null;
+        switch (lastDir)
+        {
+            case "up": oppositeDir = "down"; break;
+            case "down": oppositeDir = "up"; break;
+            case "left": oppositeDir = "right"; break;
+            case "right": oppositeDir = "left"; break;
+        }
+
+        if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
+        {
+            validDirs.Remove(oppositeDir);
+        }
+
+        List<string> possibleDirs = new List<string>();
+        float currentDist = DistanceToPlayer(currentPos);
+
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+            float newDist = DistanceToPlayer(nextPos);
+            if (newDist <= currentDist && nextPos != lastPos)
+            {
+                possibleDirs.Add(dir);
+            }
+        }
+
+        if (possibleDirs.Count == 0)
+        {
+            float closestDist = float.MaxValue;
+            string bestDir = validDirs[0];
+
+            foreach (string dir in validDirs)
+            {
+                Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+                float dist = DistanceToSpawn(nextPos);
+                if (dist < closestDist && nextPos != lastPos)
+                {
+                    closestDist = dist;
+                    bestDir = dir;
+                }
+            }
+
+            possibleDirs.Add(bestDir);
+        }
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+
+        if (!isTweening)
+        {
+            CheckNextMove();
+        }
+    }
+    void Ghost3Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        string oppositeDir = null;
+        switch (lastDir)
+        {
+            case "up": oppositeDir = "down"; break;
+            case "down": oppositeDir = "up"; break;
+            case "left": oppositeDir = "right"; break;
+            case "right": oppositeDir = "left"; break;
+        }
+        if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
+        {
+            validDirs.Remove(oppositeDir);
+        }
         if (validDirs.Count > 1 && lastTile != Vector3.zero)
         {
-            // build a list excluding moves that would step onto lastTile
             List<string> filtered = new List<string>();
             foreach (string dir in validDirs)
             {
@@ -194,10 +302,16 @@ public class GhostController : MonoBehaviour
             if (filtered.Count > 0)
                 validDirs = filtered;
         }
-
-        // Finally pick a random direction from remaining valid options
+        if (validDirs.Count == 0)
+        {
+            validDirs.Add(oppositeDir);
+        }
         direction = validDirs[Random.Range(0, validDirs.Count)];
-        CheckNextMove();
+        if (!isTweening)
+        {
+            CheckNextMove();
+        }
+            
     }
     void Ghost4Movement()
     {
@@ -222,28 +336,97 @@ public class GhostController : MonoBehaviour
             if (validDirs.Contains(dir))
             {
                 direction = dir;
-                CheckNextMove();
-                return;
+
+                if (!isTweening)
+                {
+                    CheckNextMove();
+                }
+                
             }
         }
+    }
+    void ReviveGhost()
+    {
+        if (gameObject.GetComponent<GhostStateManager>().isDead)
+        {
+            gameObject.GetComponent<GhostStateManager>().Revive();
+        }
+        List<Vector3> exitTiles = new List<Vector3>
+        {
+            new Vector3(4.16f, -5.44f, 0f),
+            new Vector3(4.16f, -3.52f, 0f),
+            new Vector3(4.48f, -5.44f, 0f),
+            new Vector3(4.48f, -3.52f, 0f)
+        };
+        Vector3 currentPos = transform.position;
+        Vector3 closestTile = exitTiles[0];
+        float minDist = Vector3.Distance(currentPos, closestTile);
+
+        foreach (Vector3 tile in exitTiles)
+        {
+            float dist = Vector3.Distance(currentPos, tile);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestTile = tile;
+            }
+        }
+        Vector3 directionToGo = closestTile - currentPos;
+
+        string dir = directionToGo.y > 0 ? "up" : "down";
+        UpdateGhost(dir, PosToTileMap(closestTile));
+        hasExitedSpawn = true;
+    }
+    public void ResetGame()
+    {
+        StopAllCoroutines(); 
+        isTweening = true;   
+
+        transform.position = spawnPoint;
+        lastTile = Vector3.zero;
+        lastDir = null;
+        currentDirection = null;
+        hasExitedSpawn = false;
+
+        GetComponent<GhostStateManager>().Revive();
+        StartCoroutine(WaitSec());
+    }
+    public void StopMovement()
+    {
+        StopAllCoroutines(); 
+        isTweening = true;   
+
+        transform.position = spawnPoint;
+        lastTile = Vector3.zero;
+        lastDir = null;
+        currentDirection = null;
+        hasExitedSpawn = false;
+    }
+
+    private IEnumerator WaitSec()
+    {
+        yield return new WaitForSeconds(1f);
+        isTweening = false;
     }
     void InitGhosts()
     {
         Vector3 moveUp = Vector3.up * 0.64f;
         Vector3 moveDown = Vector3.down * 0.64f;
-        if (ghostName == "Ghost1" || ghostState != 0)
-            {
-                UpdateGhost("up", gameObject.transform.position + moveUp);
-            }else if(ghostName == "Ghost2")
-            {
-                UpdateGhost("down", gameObject.transform.position + moveDown);
-            }else if(ghostName == "Ghost3")
-            {
-                UpdateGhost("up", gameObject.transform.position + moveUp);
-            }else if(ghostName == "Ghost4")
-            {
-                UpdateGhost("down", gameObject.transform.position + moveDown);
-            }
+        
+        if (ghostName == "Ghost1")
+        {
+            UpdateGhost("up", gameObject.transform.position + moveUp);
+        }else if(ghostName == "Ghost2")
+        {
+            UpdateGhost("down", gameObject.transform.position + moveDown);
+        }else if(ghostName == "Ghost3")
+        {
+            UpdateGhost("up", gameObject.transform.position + moveUp);
+        }else if(ghostName == "Ghost4")
+        {
+            UpdateGhost("down", gameObject.transform.position + moveDown);
+        }
+        hasExitedSpawn = true;
     }
     List<string> GetValidDirections()
     {
@@ -260,14 +443,22 @@ public class GhostController : MonoBehaviour
 
         foreach (var dir in directions)
         {
-            Vector3 next = PosToTileMap(pos + dir.Value * stepSize);
+            Vector3 next = PosToTileMap(pos + (dir.Value * stepSize));
             if (tileMap.TryGetValue(next, out string tileType))
             {
-                if (tileType != "Wall" && tileType != "GhostSpawn")
+                if(gameObject.GetComponent<GhostStateManager>().isDead){
+                    if (tileType != "Wall")
+                    {
+                        validDirs.Add(dir.Key);
+                    }
+                } else
                 {
-                    validDirs.Add(dir.Key);
+                    if (tileType != "Wall" && tileType != "GhostSpawn")
+                    {
+                        validDirs.Add(dir.Key);
+                    }
                 }
-            }
+            } 
         }
         return validDirs;
     }
@@ -275,6 +466,10 @@ public class GhostController : MonoBehaviour
     float DistanceToPlayer(Vector3 pos)
     {
         return Vector3.Distance(player.transform.position, pos);
+    }
+    float DistanceToSpawn(Vector3 pos)
+    {
+        return Vector3.Distance(spawnPoint, pos);
     }
 
     Vector3 DirToVector(string dir)
@@ -290,8 +485,8 @@ public class GhostController : MonoBehaviour
     }
     void CheckNextMove()
     {
-        Vector3 checker = gameObject.transform.position;
-        Vector3 nextPos = new Vector3(0f,0f,0f);
+        Vector3 checker = PosToTileMap(transform.position);
+        Vector3 nextPos = checker;
         if (direction == "up")
         {
             nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
@@ -308,13 +503,25 @@ public class GhostController : MonoBehaviour
         {
             nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
         }
-        if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+        if(gameObject.GetComponent<GhostStateManager>().isDead)
+        {
+            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall")
             {
                 UpdateGhost(direction, nextPos);
                 currentDirection = direction;
-                lastTile = nextPos;
+                lastTile = checker;
                 lastDir = direction;
             }
+        } else
+        {
+            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            {
+                UpdateGhost(direction, nextPos);
+                currentDirection = direction;
+                lastTile = checker;
+                lastDir = direction;
+            }
+        }
     }
         
     void UpdateGhost(string direction, Vector3 endpos)

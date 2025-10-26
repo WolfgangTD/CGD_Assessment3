@@ -17,6 +17,7 @@ public class LevelGeneratort : MonoBehaviour
     public GameObject ghost3;
     public GameObject ghost4;
     private GameStateController scoreManager;
+    public List<Vector3> spawnPoints = new List<Vector3>();
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -169,6 +170,7 @@ public class LevelGeneratort : MonoBehaviour
                         ghost3.transform.position = transformPos;
 
                         ghost3.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
                         
                     }
                 }
@@ -402,6 +404,7 @@ public class LevelGeneratort : MonoBehaviour
                         ghost1.transform.position = transformPos;
 
                         ghost1.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
                         
                     }
                 }
@@ -592,6 +595,7 @@ public class LevelGeneratort : MonoBehaviour
                         ghost2.transform.position = transformPos;
 
                         ghost2.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
                         
                     }
                 }
@@ -804,6 +808,7 @@ public class LevelGeneratort : MonoBehaviour
                         ghost4.transform.position = transformPos;
 
                         ghost4.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
                         
                     }
                 }

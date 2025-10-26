@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     private GameObject cherryController;
     public GameObject[] lives;
     GameObject levelController;
+    GameObject player;
     LevelController lc;
         
     void Start()
@@ -31,6 +32,7 @@ public class UIManager : MonoBehaviour
         timeText = timeObj.GetComponent<TextMeshProUGUI>();
         scoreManager = GameController.GetComponent<GameStateController>();
         cherryController = GameObject.FindWithTag("CherryController");
+        player = GameObject.FindWithTag("Player");
         StartCoroutine(CountDown(screenCoverUI, startGameText));
     }
 
@@ -98,5 +100,6 @@ public class UIManager : MonoBehaviour
             countdownTime--;
         }
         GhostScareTimer.SetActive(false);
+        player.GetComponent<PacStudentController>().isBuffed = false;
     }
 }
