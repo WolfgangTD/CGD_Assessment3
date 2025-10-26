@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class GhostController : MonoBehaviour
@@ -12,7 +13,7 @@ public class GhostController : MonoBehaviour
     public Vector3 spawnPoint;
     string direction;
     float stepSize = 0.32f;
-    public float walkSpeed;
+    public float walkSpeed = 0.36f;
     private GameObject player;
     Dictionary<Vector3, string> tileMap;
     private string currentDirection;
@@ -28,7 +29,6 @@ public class GhostController : MonoBehaviour
         HUD = GameObject.FindGameObjectWithTag("HUD");
         ghostName = gameObject.name;
         player = GameObject.FindWithTag("Player");
-        walkSpeed = player.GetComponent<PacStudentController>().walkSpeed * 0.90f;
         tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
         ghostState = GetComponent<GhostStateManager>().state;
         
@@ -40,13 +40,13 @@ public class GhostController : MonoBehaviour
             if (ghostName == "Ghost1" || ghostState != 0)
             {
                 Ghost1Movement();
-            }else if(ghostName == "Ghost2")
+            }else if(ghostName == "Ghost2" && ghostState == 0)
             {
                 Ghost2Movement();
-            }else if(ghostName == "Ghost3")
+            }else if(ghostName == "Ghost3" && ghostState == 0)
             {
                 Ghost3Movement();
-            }else if(ghostName == "Ghost4")
+            }else if(ghostName == "Ghost4" && ghostState == 0)
             {
                 Ghost4Movement();
             }
@@ -160,40 +160,42 @@ public class GhostController : MonoBehaviour
     void Ghost3Movement()
     {
         List<string> validDirs = GetValidDirections();
-        string dirToRemove = "right";
-        if (validDirs.Count == 0)
-        {
+        if (validDirs == null || validDirs.Count == 0)
             return;
-        }
-        foreach(string dir in validDirs)
+
+        // Determine opposite of lastDir (the "backtrack" direction we want to forbid)
+        string oppositeDir = null;
+        switch (lastDir)
         {
-            if(lastDir == "up")
-                {
-                    if(dir == "up" || dir == "left" || dir == "right")
-                    {
-                        dirToRemove = dir;
-                    }
-                } else if(lastDir == "down")
-                {
-                    if(dir == "down" || dir == "left" || dir == "right")
-                    {
-                        dirToRemove = dir;
-                    }
-                }else if(lastDir == "left")
-                {
-                    if(dir == "down" || dir == "left" || dir == "up")
-                    {
-                        dirToRemove = dir;
-                    }
-                }else if(lastDir == "right")
-                {
-                    if(dir == "down" || dir == "up" || dir == "right")
-                    {
-                        dirToRemove = dir;
-                    }
-                }
+            case "up": oppositeDir = "down"; break;
+            case "down": oppositeDir = "up"; break;
+            case "left": oppositeDir = "right"; break;
+            case "right": oppositeDir = "left"; break;
         }
-        validDirs.Remove(dirToRemove);
+
+        // Remove the opposite/backtrack direction if there are other options available.
+        // If there's only one valid direction, keep it (so the ghost won't get stuck).
+        if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
+        {
+            validDirs.Remove(oppositeDir);
+        }
+
+        // Also prefer not to go to the lastTile (the tile we just came from) if alternatives exist
+        if (validDirs.Count > 1 && lastTile != Vector3.zero)
+        {
+            // build a list excluding moves that would step onto lastTile
+            List<string> filtered = new List<string>();
+            foreach (string dir in validDirs)
+            {
+                Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
+                if (nextPos != lastTile)
+                    filtered.Add(dir);
+            }
+            if (filtered.Count > 0)
+                validDirs = filtered;
+        }
+
+        // Finally pick a random direction from remaining valid options
         direction = validDirs[Random.Range(0, validDirs.Count)];
         CheckNextMove();
     }

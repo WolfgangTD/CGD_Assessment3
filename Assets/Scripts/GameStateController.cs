@@ -32,7 +32,6 @@ public class GameStateController : MonoBehaviour
         if (HUD.GetComponent<UIManager>().countDownDone && !gameOver)
         {
             time += Time.deltaTime;
-            Debug.Log(totalPellets);
         }
         if (lives == 0 || totalPellets == 0)
         {
