@@ -160,6 +160,7 @@ public class GhostController : MonoBehaviour
     void Ghost3Movement()
     {
         List<string> validDirs = GetValidDirections();
+        string dirToRemove = "right";
         if (validDirs.Count == 0)
         {
             return;
@@ -170,29 +171,29 @@ public class GhostController : MonoBehaviour
                 {
                     if(dir == "up" || dir == "left" || dir == "right")
                     {
-                        validDirs.Remove(dir);
+                        dirToRemove = dir;
                     }
                 } else if(lastDir == "down")
                 {
                     if(dir == "down" || dir == "left" || dir == "right")
                     {
-                        validDirs.Remove(dir);
+                        dirToRemove = dir;
                     }
                 }else if(lastDir == "left")
                 {
                     if(dir == "down" || dir == "left" || dir == "up")
                     {
-                        validDirs.Remove(dir);
+                        dirToRemove = dir;
                     }
                 }else if(lastDir == "right")
                 {
                     if(dir == "down" || dir == "up" || dir == "right")
                     {
-                        validDirs.Remove(dir);
+                        dirToRemove = dir;
                     }
                 }
         }
-        
+        validDirs.Remove(dirToRemove);
         direction = validDirs[Random.Range(0, validDirs.Count)];
         CheckNextMove();
     }
@@ -347,7 +348,6 @@ public class GhostController : MonoBehaviour
     }
     IEnumerator GhostMove(Vector3 startPos, Vector3 endPos, float duration, string dir)
     {
-
         isTweening = true;
         float timeElapsed = 0f;
 
@@ -360,7 +360,7 @@ public class GhostController : MonoBehaviour
         }
 
         transform.position = endPos;
-        isTweening = false;
         direction = dir;
+        isTweening = false;
     }
 }
