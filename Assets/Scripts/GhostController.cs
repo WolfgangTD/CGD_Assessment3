@@ -18,6 +18,8 @@ public class GhostController : MonoBehaviour
     private string currentDirection;
     private int ghostState;
     bool hasExitedSpawn = false;
+    Vector3 lastTile;
+    string lastDir;
     // Start is called before the first frame update
     void Start()
     {
@@ -69,15 +71,43 @@ public class GhostController : MonoBehaviour
         List<string> possibleDirs = new List<string>();
         foreach (string dir in validDirs)
         {
+            
             Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
             float newDist = DistanceToPlayer(nextPos);
-            if (newDist >= currentDist)
-                possibleDirs.Add(dir);
+            if (newDist >= currentDist && nextPos != lastTile)
+            {
+                if(lastDir == "up")
+                {
+                    if(dir == "up" || dir == "left" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                } else if(lastDir == "down")
+                {
+                    if(dir == "down" || dir == "left" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }else if(lastDir == "left")
+                {
+                    if(dir == "down" || dir == "left" || dir == "up")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }else if(lastDir == "right")
+                {
+                    if(dir == "down" || dir == "up" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }
+            }
         }
 
         if (possibleDirs.Count == 0)
+        {
             possibleDirs = validDirs;
-
+        }
         direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
         CheckNextMove();
     }
@@ -91,8 +121,34 @@ public class GhostController : MonoBehaviour
         {
             Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
             float newDist = DistanceToPlayer(nextPos);
-            if (newDist <= currentDist)
-                possibleDirs.Add(dir);
+            if (newDist <= currentDist && nextPos != lastTile)
+            {
+                if(lastDir == "up")
+                {
+                    if(dir == "up" || dir == "left" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                } else if(lastDir == "down")
+                {
+                    if(dir == "down" || dir == "left" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }else if(lastDir == "left")
+                {
+                    if(dir == "down" || dir == "left" || dir == "up")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }else if(lastDir == "right")
+                {
+                    if(dir == "down" || dir == "up" || dir == "right")
+                    {
+                        possibleDirs.Add(dir);
+                    }
+                }
+            }
         }
 
         if (possibleDirs.Count == 0)
@@ -105,17 +161,46 @@ public class GhostController : MonoBehaviour
     {
         List<string> validDirs = GetValidDirections();
         if (validDirs.Count == 0)
+        {
             return;
+        }
         direction = validDirs[Random.Range(0, validDirs.Count)];
+        if(lastDir == "up")
+                {
+                    if(direction == "up" || direction == "left" || direction == "right")
+                    {
+                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                    }
+                } else if(lastDir == "down")
+                {
+                    if(direction == "down" || direction == "left" || direction == "right")
+                    {
+                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                    }
+                }else if(lastDir == "left")
+                {
+                    if(direction == "down" || direction == "left" || direction == "up")
+                    {
+                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                    }
+                }else if(lastDir == "right")
+                {
+                    if(direction == "down" || direction == "up" || direction == "right")
+                    {
+                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                    }
+                }
         CheckNextMove();
     }
     void Ghost4Movement()
     {
         List<string> validDirs = GetValidDirections();
 
-        // If no current direction, pick any to start
         if (string.IsNullOrEmpty(currentDirection))
+        {
             currentDirection = "right";
+        }
+            
 
         Dictionary<string, List<string>> clockwisePriority = new Dictionary<string, List<string>>
         {
@@ -171,23 +256,12 @@ public class GhostController : MonoBehaviour
             Vector3 next = PosToTileMap(pos + dir.Value * stepSize);
             if (tileMap.TryGetValue(next, out string tileType))
             {
-                if (!hasExitedSpawn)
+                if (tileType != "Wall" && tileType != "GhostSpawn")
                 {
-                    if (tileType != "Wall")
-                    {
-                        validDirs.Add(dir.Key);
-                    }
-                }
-                else
-                {
-                    if (tileType != "Wall" && tileType != "GhostSpawn")
-                    {
-                        validDirs.Add(dir.Key);
-                    }
+                    validDirs.Add(dir.Key);
                 }
             }
         }
-
         return validDirs;
     }
 
@@ -231,6 +305,8 @@ public class GhostController : MonoBehaviour
             {
                 UpdateGhost(direction, nextPos);
                 currentDirection = direction;
+                lastTile = nextPos;
+                lastDir = direction;
             }
     }
         
