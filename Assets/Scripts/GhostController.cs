@@ -6,171 +6,243 @@ public class GhostController : MonoBehaviour
 {
     string ghostName;
     bool isTweening = false;
+    private Animator aniController;
     private GameObject HUD;
     public GameObject levelGen;
-    public Vector3 spawnPoint1;
-    public Vector3 spawnPoint2;
-    public Vector3 spawnPoint3;
-    public Vector3 spawnPoint4;
+    public Vector3 spawnPoint;
+    string direction;
+    float stepSize = 0.32f;
+    public float walkSpeed;
+    private GameObject player;
+    Dictionary<Vector3, string> tileMap;
+    private string currentDirection;
+    private int ghostState;
+    bool gameStarted = false;
+    bool hasExitedSpawn = false;
     // Start is called before the first frame update
     void Start()
     {
+        aniController = GetComponent<Animator>();
         levelGen = GameObject.FindWithTag("LevelGenerator");
         HUD = GameObject.FindGameObjectWithTag("HUD");
         ghostName = gameObject.name;
+        player = GameObject.FindWithTag("Player");
+        walkSpeed = player.GetComponent<PacStudentController>().walkSpeed * 0.90f;
+        tileMap = levelGen.GetComponent<LevelGeneratort>().tileMap;
+        ghostState = GetComponent<GhostStateManager>().state;
         
     }
     void StartGhosts()
     {
-        if (ghostName == "Ghost1")
+        if (hasExitedSpawn)
         {
-            
-        }else if(ghostName == "Ghost2")
-        {
-            
-        }else if(ghostName == "Ghost3")
-        {
-            
-        }else if(ghostName == "Ghost4")
+            if (ghostName == "Ghost1" || ghostState != 0)
+            {
+                Ghost1Movement();
+            }else if(ghostName == "Ghost2")
+            {
+                Ghost2Movement();
+            }else if(ghostName == "Ghost3")
+            {
+                Ghost3Movement();
+            }else if(ghostName == "Ghost4")
+            {
+                Ghost4Movement();
+            }
+        } else
         {
             
         }
+        
     }
     void Update()
     {
         if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
-            GetMovementInput();
-            if (!isTweening)
+            Debug.Log(spawnPoint);
+            if (!gameStarted)
             {
+                gameStarted = true;
                 StartGhosts();
             }
         }
     }
+    void Ghost1Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        float currentDist = DistanceToPlayer(transform.position);
+
+        List<string> possibleDirs = new List<string>();
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
+            float newDist = DistanceToPlayer(nextPos);
+            if (newDist >= currentDist)
+                possibleDirs.Add(dir);
+        }
+
+        if (possibleDirs.Count == 0)
+            possibleDirs = validDirs;
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+        CheckNextMove();
+    }
+    void Ghost2Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        float currentDist = DistanceToPlayer(transform.position);
+
+        List<string> possibleDirs = new List<string>();
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(transform.position + DirToVector(dir) * stepSize);
+            float newDist = DistanceToPlayer(nextPos);
+            if (newDist <= currentDist)
+                possibleDirs.Add(dir);
+        }
+
+        if (possibleDirs.Count == 0)
+            possibleDirs = validDirs;
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+        CheckNextMove();
+    }
+    void Ghost3Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+        if (validDirs.Count == 0)
+            return;
+        direction = validDirs[Random.Range(0, validDirs.Count)];
+        CheckNextMove();
+    }
+    void Ghost4Movement()
+    {
+        List<string> validDirs = GetValidDirections();
+
+        // If no current direction, pick any to start
+        if (string.IsNullOrEmpty(currentDirection))
+            currentDirection = "right";
+
+        Dictionary<string, List<string>> clockwisePriority = new Dictionary<string, List<string>>
+        {
+            {"up", new List<string>{"right", "up", "left", "down"}},
+            {"right", new List<string>{"down", "right", "up", "left"}},
+            {"down", new List<string>{"left", "down", "right", "up"}},
+            {"left", new List<string>{"up", "left", "down", "right"}}
+        };
+
+        foreach (var dir in clockwisePriority[currentDirection])
+        {
+            if (validDirs.Contains(dir))
+            {
+                direction = dir;
+                CheckNextMove();
+                return;
+            }
+        }
+    }
+    List<string> GetValidDirections()
+    {
+        List<string> validDirs = new List<string>();
+        Vector3 pos = transform.position;
+
+        var directions = new Dictionary<string, Vector3>
+        {
+            {"up", Vector3.up},
+            {"down", Vector3.down},
+            {"left", Vector3.left},
+            {"right", Vector3.right}
+        };
+
+        foreach (var dir in directions)
+        {
+            Vector3 next = PosToTileMap(pos + dir.Value * stepSize);
+            if (tileMap.TryGetValue(next, out string tileType))
+            {
+                if (!hasExitedSpawn)
+                {
+                    if (tileType != "Wall")
+                    {
+                        validDirs.Add(dir.Key);
+                    }
+                }
+                else
+                {
+                    if (tileType != "Wall" && tileType != "GhostSpawn")
+                    {
+                        validDirs.Add(dir.Key);
+                    }
+                }
+            }
+        }
+
+        return validDirs;
+    }
+
+    float DistanceToPlayer(Vector3 pos)
+    {
+        return Vector3.Distance(player.transform.position, pos);
+    }
+
+    Vector3 DirToVector(string dir)
+    {
+        switch (dir)
+        {
+            case "up": return Vector3.up;
+            case "down": return Vector3.down;
+            case "left": return Vector3.left;
+            case "right": return Vector3.right;
+            default: return Vector3.zero;
+        }
+    }
     void CheckNextMove()
     {
-        Vector3 checker = player.transform.position;
+        Vector3 checker = gameObject.transform.position;
         Vector3 nextPos = new Vector3(0f,0f,0f);
-        if (lastInput == "up")
+        if (direction == "up")
         {
             nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
         }
-        else if (lastInput == "down")
+        else if (direction == "down")
         {
             nextPos = PosToTileMap(checker + (Vector3.down * stepSize));
         }
-        else if (lastInput == "left")
+        else if (direction == "left")
         {
             nextPos = PosToTileMap(checker + (Vector3.left * stepSize));
         }
-        else if (lastInput == "right")
+        else if (direction == "right")
         {
             nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
         }
         if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
-        {
-            UpdatePlayer(lastInput, nextPos);
-            currentInput = lastInput;
-            if (tileType == "Pellet")
             {
-                audioSource.clip = walkingEating;
-                audioSource.Play();
-                wallHit = false;
-                tileMap[nextPos] = "Empty";
-                
-            } else if(tileType == "PowerPellet")
-            {
-                audioSource.clip = walkingEating;
-                audioSource.Play();
-                wallHit = false;
-                isBuffed = true;
-                gameController.GetComponent<GameStateController>().StartBuffState();
-                StartCoroutine(BuffCounter());
-                tileMap[nextPos] = "Empty";
+                UpdateGhost(direction, nextPos);
+                currentDirection = direction;
             }
-            else
-            {
-                audioSource.clip = walking;
-                audioSource.Play();
-                wallHit = false;
-            }
-        }
-        else
-        {
-            if (currentInput == "up")
-            {
-                nextPos = PosToTileMap(checker + (Vector3.up * stepSize));
-            }
-            else if (currentInput == "down")
-            {
-                nextPos = PosToTileMap(checker + (Vector3.down * stepSize));
-            }
-            else if (currentInput == "left")
-            {
-                nextPos = PosToTileMap(checker + (Vector3.left * stepSize));
-            }
-            else if (currentInput == "right")
-            {
-                nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
-            }
-            if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
-            {
-                UpdatePlayer(currentInput, nextPos);
-                if (tileType2 == "Pellet")
-                {
-                    audioSource.clip = walkingEating;
-                    audioSource.Play();
-                    wallHit = false;
-                    tileMap[nextPos] = "Empty";
-                }else if(tileType2 == "PowerPellet")
-                {
-                    audioSource.clip = walkingEating;
-                    audioSource.Play();
-                    wallHit = false;
-                    isBuffed = true;
-                    gameController.GetComponent<GameStateController>().StartBuffState();
-                    StartCoroutine(BuffCounter());
-                    tileMap[nextPos] = "Empty";
-                }
-                else
-                {
-                    audioSource.clip = walking;
-                    audioSource.Play();
-                    wallHit = false;
-                }
-            } else
-            {
-                if(lastInput != null && !wallHit)
-                {
-                    audioSource.clip = hitWall;
-                    audioSource.Play();
-                    wallHit = true;
-                    wallHitEffect.Play();
-                }
-            }
-        }
     }
-    void UpdatePlayer(string direction, Vector3 endpos)
+        
+    void UpdateGhost(string direction, Vector3 endpos)
     {
         if (direction == "up")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "up"));
-            aniController.SetInteger("Direction", 3);
+            StartCoroutine(GhostMove(gameObject.transform.position, endpos, walkSpeed, "up"));
+            aniController.SetInteger("Direction", 1);
         }
         else if (direction == "down")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "down"));
-            aniController.SetInteger("Direction", 1);
+            StartCoroutine(GhostMove(gameObject.transform.position, endpos, walkSpeed, "down"));
+            aniController.SetInteger("Direction", 0);
         }
         else if (direction == "left")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "left"));
-            aniController.SetInteger("Direction", 2);
+            StartCoroutine(GhostMove(gameObject.transform.position, endpos, walkSpeed, "left"));
+            aniController.SetInteger("Direction", 3);
         }
         else if (direction == "right")
         {
-            StartCoroutine(PlayerMove(player.transform.position, endpos, walkSpeed, "right"));
-            aniController.SetInteger("Direction", 0);
+            StartCoroutine(GhostMove(gameObject.transform.position, endpos, walkSpeed, "right"));
+            aniController.SetInteger("Direction", 2);
         }
     }
     Vector3 PosToTileMap(Vector3 pos)
@@ -181,20 +253,39 @@ public class GhostController : MonoBehaviour
             0
         );
     }
-    IEnumerator GhostMove(Vector3 startPos, Vector3 endPos, float duration, string direction)
+    IEnumerator GhostMove(Vector3 startPos, Vector3 endPos, float duration, string dir)
     {
+        if (isTweening)
+            yield break;
+
         isTweening = true;
         float timeElapsed = 0f;
+
         while (timeElapsed < duration)
         {
-            float timeLen = timeElapsed / duration;
-            player.transform.position = Vector3.Lerp(startPos, endPos, timeLen);
+            float time = timeElapsed / duration;
+            transform.position = Vector3.Lerp(startPos, endPos, time);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-        player.transform.position = endPos;
-        isTweening = false;
-        lastInput = direction;
-    }
 
+        transform.position = endPos;
+        isTweening = false;
+        direction = dir;
+
+        if (!hasExitedSpawn && tileMap.TryGetValue(endPos, out string t) && t != "GhostSpawn")
+        {
+            hasExitedSpawn = true;
+        }
+        if (gameStarted)
+        {
+            switch (ghostName)
+            {
+                case "Ghost1": Ghost1Movement(); break;
+                case "Ghost2": Ghost2Movement(); break;
+                case "Ghost3": Ghost3Movement(); break;
+                case "Ghost4": Ghost4Movement(); break;
+            }
+        }
+    }
 }
