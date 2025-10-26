@@ -291,7 +291,7 @@ public class PacStudentController : MonoBehaviour
         if(other.CompareTag("Ghost") && !isBuffed)
         {
             GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
-            //HUDLives[livesLeft-1].SetActive(false);
+            HUDLives[livesLeft-1].SetActive(false);
             livesLeft --;
             deathEffect.Play();
             aniController.SetTrigger("isDead");
