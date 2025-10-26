@@ -164,32 +164,36 @@ public class GhostController : MonoBehaviour
         {
             return;
         }
-        direction = validDirs[Random.Range(0, validDirs.Count)];
-        if(lastDir == "up")
+        foreach(string dir in validDirs)
+        {
+            if(lastDir == "up")
                 {
-                    if(direction == "up" || direction == "left" || direction == "right")
+                    if(dir == "up" || dir == "left" || dir == "right")
                     {
-                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                        validDirs.Remove(dir);
                     }
                 } else if(lastDir == "down")
                 {
-                    if(direction == "down" || direction == "left" || direction == "right")
+                    if(dir == "down" || dir == "left" || dir == "right")
                     {
-                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                        validDirs.Remove(dir);
                     }
                 }else if(lastDir == "left")
                 {
-                    if(direction == "down" || direction == "left" || direction == "up")
+                    if(dir == "down" || dir == "left" || dir == "up")
                     {
-                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                        validDirs.Remove(dir);
                     }
                 }else if(lastDir == "right")
                 {
-                    if(direction == "down" || direction == "up" || direction == "right")
+                    if(dir == "down" || dir == "up" || dir == "right")
                     {
-                        direction = validDirs[Random.Range(0, validDirs.Count)];
+                        validDirs.Remove(dir);
                     }
                 }
+        }
+        
+        direction = validDirs[Random.Range(0, validDirs.Count)];
         CheckNextMove();
     }
     void Ghost4Movement()
