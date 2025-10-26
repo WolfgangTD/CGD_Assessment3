@@ -17,7 +17,6 @@ public class GhostController : MonoBehaviour
     Dictionary<Vector3, string> tileMap;
     private string currentDirection;
     private int ghostState;
-    bool gameStarted = false;
     bool hasExitedSpawn = false;
     // Start is called before the first frame update
     void Start()
@@ -51,20 +50,15 @@ public class GhostController : MonoBehaviour
             }
         } else
         {
-            
+            InitGhosts();
+            hasExitedSpawn = true;
         }
-        
     }
     void Update()
     {
-        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
+        if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver && !isTweening)
         {
-            Debug.Log(spawnPoint);
-            if (!gameStarted)
-            {
-                gameStarted = true;
                 StartGhosts();
-            }
         }
     }
     void Ghost1Movement()
@@ -140,6 +134,24 @@ public class GhostController : MonoBehaviour
                 return;
             }
         }
+    }
+    void InitGhosts()
+    {
+        Vector3 moveUp = Vector3.up * 0.64f;
+        Vector3 moveDown = Vector3.down * 0.64f;
+        if (ghostName == "Ghost1" || ghostState != 0)
+            {
+                UpdateGhost("up", gameObject.transform.position + moveUp);
+            }else if(ghostName == "Ghost2")
+            {
+                UpdateGhost("down", gameObject.transform.position + moveDown);
+            }else if(ghostName == "Ghost3")
+            {
+                UpdateGhost("up", gameObject.transform.position + moveUp);
+            }else if(ghostName == "Ghost4")
+            {
+                UpdateGhost("down", gameObject.transform.position + moveDown);
+            }
     }
     List<string> GetValidDirections()
     {
@@ -255,8 +267,6 @@ public class GhostController : MonoBehaviour
     }
     IEnumerator GhostMove(Vector3 startPos, Vector3 endPos, float duration, string dir)
     {
-        if (isTweening)
-            yield break;
 
         isTweening = true;
         float timeElapsed = 0f;
@@ -272,20 +282,5 @@ public class GhostController : MonoBehaviour
         transform.position = endPos;
         isTweening = false;
         direction = dir;
-
-        if (!hasExitedSpawn && tileMap.TryGetValue(endPos, out string t) && t != "GhostSpawn")
-        {
-            hasExitedSpawn = true;
-        }
-        if (gameStarted)
-        {
-            switch (ghostName)
-            {
-                case "Ghost1": Ghost1Movement(); break;
-                case "Ghost2": Ghost2Movement(); break;
-                case "Ghost3": Ghost3Movement(); break;
-                case "Ghost4": Ghost4Movement(); break;
-            }
-        }
     }
 }
