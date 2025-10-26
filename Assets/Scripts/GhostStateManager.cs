@@ -8,20 +8,16 @@ using UnityEngine;
 
 public class GhostStateManager : MonoBehaviour
 {
-    GameObject player;
-    PacStudentController playerCont;
     public float scaredFor = 7f;
     public float recoveringFor = 3f;
     public float deadFor = 3f;
-    public int state = 0;
     public bool isDead = false;
+    public int state = 0;
     private Animator animator;
 
 
     private void Start()
     {
-        player = GameObject.FindWithTag("Player");
-        playerCont = player.GetComponent<PacStudentController>();
         animator = gameObject.GetComponent<Animator>();
     }
     public void Scared()
@@ -32,55 +28,16 @@ public class GhostStateManager : MonoBehaviour
     public void Die()
     {
         StopAllCoroutines();
-        float timeAdj = playerCont.buffTime;
-        if (state == 1)
-        {
-            if(scaredFor - timeAdj > recoveringFor)
-            {
-                StartCoroutine(HandleDeath());
-            } else
-            {
-                StartCoroutine(HandleDeath3());
-            }
-        }
-        else if (state == 2)
-        {
-            StartCoroutine(HandleDeath2());
-        } 
-    }
-
-    private IEnumerator HandleDeath()
-    {
-        state = 3; // dead
+        isDead = true;
+        state = 3;
         animator.SetTrigger("isDead");
-        yield return new WaitForSeconds(3f); 
-
-        state = 2;
-        animator.SetTrigger("goToRecovery");
-        yield return new WaitForSeconds(3f); 
+        GetComponent<GhostController>().hasExitedSpawn = false;
+    }
+    public void Revive()
+    {
+        isDead = false;
         state = 0;
         animator.SetTrigger("playerNotBuffed");
-    }
-    private IEnumerator HandleDeath3()
-    {
-        state = 3; // dead
-        animator.SetTrigger("isDead");
-        yield return new WaitForSeconds(3f); 
-        float timeAdj = playerCont.buffTime;
-        float timeLeft = 10f - timeAdj;
-        state = 2;
-        animator.SetTrigger("goToRecovery");
-        yield return new WaitForSeconds(timeLeft); 
-        state = 0;
-        animator.SetTrigger("playerNotBuffed");
-    }
-    private IEnumerator HandleDeath2()
-    {
-        state = 3; // dead
-        animator.SetTrigger("isDead");
-        yield return new WaitForSeconds(3f); 
-        state = 0;
-        animator.SetTrigger("playerNotBuffed");     
     }
 
     

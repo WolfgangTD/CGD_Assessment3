@@ -17,6 +17,7 @@ public class LevelGeneratort : MonoBehaviour
     public GameObject ghost3;
     public GameObject ghost4;
     private GameStateController scoreManager;
+    public List<Vector3> spawnPoints = new List<Vector3>();
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -167,10 +168,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost3.transform.position = transformPos;
-                        if (ghost3.GetComponent<GhostController>().spawnPoint3 != transformPos)
-                        {
-                            ghost3.GetComponent<GhostController>().spawnPoint3 = transformPos;
-                        }
+
+                        ghost3.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -401,10 +402,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost1.transform.position = transformPos;
-                        if (ghost1.GetComponent<GhostController>().spawnPoint1 != transformPos)
-                        {
-                            ghost1.GetComponent<GhostController>().spawnPoint1 = transformPos;
-                        }
+
+                        ghost1.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -592,10 +593,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost2.transform.position = transformPos;
-                        if (ghost2.GetComponent<GhostController>().spawnPoint2 != transformPos)
-                        {
-                            ghost2.GetComponent<GhostController>().spawnPoint2 = transformPos;
-                        }
+
+                        ghost2.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
                     }
                 }
                 if (mapBlueprint[y, x] == 5)
@@ -805,10 +806,10 @@ public class LevelGeneratort : MonoBehaviour
                     if(mapBlueprint[y-1, x] == 8)
                     {
                         ghost4.transform.position = transformPos;
-                        if (ghost4.GetComponent<GhostController>().spawnPoint4 != transformPos)
-                        {
-                            ghost4.GetComponent<GhostController>().spawnPoint4 = transformPos;
-                        }
+
+                        ghost4.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
                     }
                 }
                 if (mapBlueprint[y, x] == 5)

@@ -27,10 +27,9 @@ public class PacStudentController : MonoBehaviour
     public AudioSource audioSource;
     public Vector3 spawnPoint;
     private GameObject HUD;
-    public bool isBuffed = false;
-    public float buffTime = 0f;
+    public bool isBuffed;
 
-    public float walkSpeed = 0.4f;
+    private float walkSpeed = 0.4f;
     // Start is called before the first frame update
     void Start()
     {
@@ -174,7 +173,6 @@ public class PacStudentController : MonoBehaviour
                 wallHit = false;
                 isBuffed = true;
                 gameController.GetComponent<GameStateController>().StartBuffState();
-                StartCoroutine(BuffCounter());
                 tileMap[nextPos] = "Empty";
             }
             else
@@ -218,7 +216,6 @@ public class PacStudentController : MonoBehaviour
                     wallHit = false;
                     isBuffed = true;
                     gameController.GetComponent<GameStateController>().StartBuffState();
-                    StartCoroutine(BuffCounter());
                     tileMap[nextPos] = "Empty";
                 }
                 else
@@ -288,15 +285,16 @@ public class PacStudentController : MonoBehaviour
             gameController.GetComponent<GameStateController>().totalPellets--;
         }
         
-        if(other.CompareTag("Ghost") && !isBuffed)
+        if(other.CompareTag("Ghost") && !isBuffed && !other.GetComponent<GhostStateManager>().isDead)
         {
             GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
             HUDLives[livesLeft-1].SetActive(false);
             livesLeft --;
             deathEffect.Play();
             aniController.SetTrigger("isDead");
+            levelGen.GetComponent<GameStateController>().ResetGame();
             ResetGame();
-        }else if(other.CompareTag("Ghost") && isBuffed)
+        }else if(other.CompareTag("Ghost") && isBuffed && !other.GetComponent<GhostStateManager>().isDead)
         {
             gameController.GetComponent<GameStateController>().currentScore += 300;
             other.GetComponent<GhostStateManager>().Die();
@@ -307,15 +305,5 @@ public class PacStudentController : MonoBehaviour
         player.GetComponent<BoxCollider>().enabled = false;
         yield return new WaitForSeconds(1f);
         player.GetComponent<BoxCollider>().enabled = true;
-    }
-    
-    IEnumerator BuffCounter()
-    {
-        while (buffTime < 10f)
-        {
-            buffTime++;
-            yield return null;
-        }
-        buffTime = 0f;
     }
 }

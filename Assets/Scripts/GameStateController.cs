@@ -13,7 +13,6 @@ public class GameStateController : MonoBehaviour
     private GameObject cherryController;
     private GameObject[] ghosts;
     public int totalPellets;
-    public int lives;
     public float time;
     public int currentScore;
     void Start()
@@ -25,16 +24,14 @@ public class GameStateController : MonoBehaviour
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         time = 0;
         currentScore = 0;
-        lives = player.GetComponent<PacStudentController>().livesLeft;
     }
     void Update()
     {
         if (HUD.GetComponent<UIManager>().countDownDone && !gameOver)
         {
             time += Time.deltaTime;
-            Debug.Log(totalPellets);
         }
-        if (lives == 0 || totalPellets == 0)
+        if (player.GetComponent<PacStudentController>().livesLeft == 0 || totalPellets == 0)
         {
             GameOver();
         }
@@ -46,6 +43,10 @@ public class GameStateController : MonoBehaviour
         gameOver = true;
         cherryController.GetComponent<CherryController>().StopAllCoroutines();
         player.GetComponent<PacStudentController>().StopMovement();
+        foreach(GameObject ghost in ghosts)
+        {
+            ghost.GetComponent<GhostController>().StopMovement();
+        }
         if(currentScore > PlayerPrefs.GetInt("HIGHSCORE") || (currentScore == PlayerPrefs.GetInt("HIGHSCORE") && time < PlayerPrefs.GetInt("HIGHSCORE_TIME")))
         {
             sm.SetNewScore(currentScore, time);
@@ -58,9 +59,19 @@ public class GameStateController : MonoBehaviour
         HUD.GetComponent<UIManager>().StartGhostTimer();
         foreach(GameObject ghost in ghosts)
         {
-            ghost.GetComponent<GhostStateManager>().Scared();
+            if (!ghost.GetComponent<GhostStateManager>().isDead)
+            {
+                ghost.GetComponent<GhostStateManager>().Scared();
+            }
         }
         StartCoroutine(SoundManaging());
+    }
+    public void ResetGame()
+    {
+        foreach(GameObject ghost in ghosts)
+        {
+            ghost.GetComponent<GhostController>().ResetGame();
+        }
     }
     IEnumerator SoundManaging()
     {
