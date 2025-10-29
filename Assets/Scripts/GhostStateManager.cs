@@ -22,7 +22,15 @@ public class GhostStateManager : MonoBehaviour
     }
     public void Scared()
     {
-        StartCoroutine(ChangeGameState());
+        StopAllCoroutines();
+        GetComponent<GhostController>().isScared = true;
+        StartCoroutine(ChangeGameState(scaredFor, recoveringFor));
+    }
+    public void Scared(float scaredFor, float recoveringFor)
+    {
+        StopAllCoroutines();
+        GetComponent<GhostController>().isScared = true;
+        StartCoroutine(ChangeGameState(scaredFor, recoveringFor));
     }
 
     public void Die()
@@ -35,14 +43,20 @@ public class GhostStateManager : MonoBehaviour
     }
     public void Revive()
     {
+        GetComponent<GhostController>().isScared = false;
         isDead = false;
         state = 0;
         animator.SetTrigger("playerNotBuffed");
     }
 
     
-    private IEnumerator ChangeGameState()
+    private IEnumerator ChangeGameState(float scaredFor, float recoveringFor)
     {
+        animator.ResetTrigger("isDead");
+        animator.ResetTrigger("playerNotBuffed");
+        animator.ResetTrigger("goToRecovery");
+        animator.ResetTrigger("playerBuffed");
+
         state = 1; // scared
         animator.SetTrigger("playerBuffed");
 
@@ -56,7 +70,11 @@ public class GhostStateManager : MonoBehaviour
 
         // Normal
         state = 0;
+        GetComponent<GhostController>().isScared = false;
         animator.SetTrigger("playerNotBuffed");
-        
+        if (gameObject.name == "Ghost4")
+        {
+            GetComponent<GhostController>().ResetCornerTarget();
+        }
     }
 }

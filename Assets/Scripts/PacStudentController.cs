@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class PacStudentController : MonoBehaviour
 {
+    public AudioSource bonusCherrySound;
     private GameObject gameController;
     private GameObject CherryController;
     public ParticleSystem wallHitEffect;
@@ -24,10 +26,12 @@ public class PacStudentController : MonoBehaviour
     public AudioClip walking;
     public AudioClip walkingEating;
     public AudioClip hitWall;
+    public AudioClip deathSound;
     public AudioSource audioSource;
     public Vector3 spawnPoint;
     private GameObject HUD;
     public bool isBuffed;
+    private bool isDead;
 
     private float walkSpeed = 0.4f;
     // Start is called before the first frame update
@@ -42,7 +46,7 @@ public class PacStudentController : MonoBehaviour
         CherryController = GameObject.FindWithTag("CherryController");
         gameController = GameObject.FindWithTag("LevelGenerator");
         HUD = GameObject.FindGameObjectWithTag("HUD");
-        
+        isDead = false;
     }
 
     // Update is called once per frame
@@ -51,7 +55,7 @@ public class PacStudentController : MonoBehaviour
         if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
             GetMovementInput();
-            if (!isTweening)
+            if (!isTweening && !isDead)
             {
                 CheckNextMove();
             }
@@ -64,11 +68,11 @@ public class PacStudentController : MonoBehaviour
         lastInput = null;
         isTweening = false;
         movement = Vector3.zero;
-        audioSource.Stop();
     }
     public void ResetGame()
     {
         StopMovement();
+        StartCoroutine(ReenableCollider());
         StartCoroutine(DeadMode(1)); 
     }
     IEnumerator DeadMode(int secs)
@@ -76,6 +80,7 @@ public class PacStudentController : MonoBehaviour
         yield return new WaitForSeconds(secs);
         player.transform.position = spawnPoint;
         aniController.SetTrigger("reset");
+        isDead = false;
     }
     void GetMovementInput()
     {
@@ -155,7 +160,7 @@ public class PacStudentController : MonoBehaviour
         {
             nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
         }
-        if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+        if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn" && tileType != "OutsideWall")
         {
             UpdatePlayer(lastInput, nextPos);
             currentInput = lastInput;
@@ -200,7 +205,7 @@ public class PacStudentController : MonoBehaviour
             {
                 nextPos = PosToTileMap(checker + (Vector3.right * stepSize));
             }
-            if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn")
+            if (tileMap.TryGetValue(nextPos, out string tileType2) && tileType2 != "Wall" && tileType2 != "GhostSpawn" && tileType != "OutsideWall")
             {
                 UpdatePlayer(currentInput, nextPos);
                 if (tileType2 == "Pellet")
@@ -269,6 +274,7 @@ public class PacStudentController : MonoBehaviour
         }
         else if (other.CompareTag("BonusCrystal"))
         {
+            bonusCherrySound.Play();
             CherryController.GetComponent<CherryController>().KillCrystal(other.gameObject);
             gameController.GetComponent<GameStateController>().currentScore += 100;
         }
@@ -287,13 +293,17 @@ public class PacStudentController : MonoBehaviour
         
         if(other.CompareTag("Ghost") && !isBuffed && !other.GetComponent<GhostStateManager>().isDead)
         {
+            isDead = true;
             GameObject[] HUDLives = HUD.GetComponent<UIManager>().lives;
             HUDLives[livesLeft-1].SetActive(false);
             livesLeft --;
             deathEffect.Play();
+            audioSource.clip = deathSound;
+            audioSource.Play();
             aniController.SetTrigger("isDead");
-            levelGen.GetComponent<GameStateController>().ResetGame();
             ResetGame();
+            levelGen.GetComponent<GameStateController>().ResetGame();
+            
         }else if(other.CompareTag("Ghost") && isBuffed && !other.GetComponent<GhostStateManager>().isDead)
         {
             gameController.GetComponent<GameStateController>().currentScore += 300;

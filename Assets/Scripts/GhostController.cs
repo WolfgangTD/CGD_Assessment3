@@ -6,7 +6,9 @@ using UnityEngine;
 public class GhostController : MonoBehaviour
 {
     string ghostName;
-    bool isTweening = false;
+    public bool foundOuterWall = false;
+    public bool isTweening = false;
+    public bool isScared = false;
     private Animator aniController;
     private GameObject HUD;
     public GameObject levelGen;
@@ -22,7 +24,14 @@ public class GhostController : MonoBehaviour
     public bool hasExitedSpawn = false;
     Vector3 lastTile;
     string lastDir;
-    // Start is called before the first frame update
+    private int currentCornerIndex = 0;
+    private List<Vector3> cornerTiles = new List<Vector3>
+    {
+        new Vector3(8.32f, -8.64f, 0f), 
+        new Vector3(0.32f, -8.64f, 0f), 
+        new Vector3(0.32f, -0.32f, 0f), 
+        new Vector3(8.32f, -0.32f, 0f)  
+    };
     void Start()
     {
         aniController = GetComponent<Animator>();
@@ -35,49 +44,45 @@ public class GhostController : MonoBehaviour
     }
     void StartGhosts()
     {
-        if(!GetComponent<GhostStateManager>().isDead)
-        {
-            if (!hasExitedSpawn)
-            {
-                InitGhosts();
-            }
-            else if (hasExitedSpawn)
-            {
-                walkSpeed = playerMoveSpeed*1.1f;
-                if (ghostName == "Ghost1")
-                {
-                    Ghost1Movement();
-                }else if(ghostName == "Ghost2")
-                {
-                    Ghost2Movement();
-                }else if(ghostName == "Ghost3")
-                {
-                    Ghost3Movement();
-                }else if(ghostName == "Ghost4")
-                {
-                    Ghost4Movement();
-                }
-            }  
-        }
-        else if(GetComponent<GhostStateManager>().isDead)
+        var ghostState = GetComponent<GhostStateManager>();
+
+        if (ghostState.isDead)
         {
             BackToSpawn();
-            if(GetComponent<GhostStateManager>().isDead && gameObject.transform.position == closestSpawn)
+            if (transform.position == closestSpawn)
             {
                 ReviveGhost();
             }
-        } 
-        else if(hasExitedSpawn && (GetComponent<GhostStateManager>().state == 1 || GetComponent<GhostStateManager>().state == 2))
+            return;
+        }
+
+        if (isScared)
         {
-            walkSpeed = playerMoveSpeed*1.5f;
-            Ghost1Movement();
+            walkSpeed = playerMoveSpeed * 1.5f;
+            foundOuterWall = false;
+            Ghost1Movement(); 
+            return;
+        }
+
+        if (!hasExitedSpawn)
+        {
+            InitGhosts();
+            return;
+        }
+
+        walkSpeed = playerMoveSpeed * 1.1f;
+        switch (ghostName)
+        {
+            case "Ghost1": Ghost1Movement(); break;
+            case "Ghost2": Ghost2Movement(); break;
+            case "Ghost3": Ghost3Movement(); break;
+            case "Ghost4": Ghost4Movement(); break;
         }
     }
     void Update()
     {
         if (HUD.GetComponent<UIManager>().countDownDone && !levelGen.GetComponent<GameStateController>().gameOver)
         {
-            
             if (!isTweening)
             {
                 StartGhosts();
@@ -316,40 +321,94 @@ public class GhostController : MonoBehaviour
     void Ghost4Movement()
     {
         List<string> validDirs = GetValidDirections();
+        Vector3 currentPos = transform.position;
+        Vector3 lastPos = lastTile;
 
-        if (string.IsNullOrEmpty(currentDirection))
+        string oppositeDir = null;
+        switch (lastDir)
         {
-            currentDirection = "right";
+            case "up": oppositeDir = "down"; break;
+            case "down": oppositeDir = "up"; break;
+            case "left": oppositeDir = "right"; break;
+            case "right": oppositeDir = "left"; break;
         }
-            
+        if (!string.IsNullOrEmpty(oppositeDir) && validDirs.Count > 1)
+            validDirs.Remove(oppositeDir);
 
-        Dictionary<string, List<string>> clockwisePriority = new Dictionary<string, List<string>>
-        {
-            {"up", new List<string>{"right", "up", "left", "down"}},
-            {"right", new List<string>{"down", "right", "up", "left"}},
-            {"down", new List<string>{"left", "down", "right", "up"}},
-            {"left", new List<string>{"up", "left", "down", "right"}}
-        };
+        if (currentCornerIndex >= cornerTiles.Count)
+            currentCornerIndex = 0;
 
-        foreach (var dir in clockwisePriority[currentDirection])
+        Vector3 targetCorner = cornerTiles[currentCornerIndex];
+
+        if (Vector3.Distance(currentPos, targetCorner) < 0.1f)
         {
-            if (validDirs.Contains(dir))
+            currentCornerIndex++;
+            if (currentCornerIndex >= cornerTiles.Count)
+                currentCornerIndex = 0;
+
+            targetCorner = cornerTiles[currentCornerIndex];
+        }
+
+        List<string> possibleDirs = new List<string>();
+        float currentDist = Vector3.Distance(currentPos, targetCorner);
+
+        foreach (string dir in validDirs)
+        {
+            Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+            float newDist = Vector3.Distance(nextPos, targetCorner);
+            if (newDist < currentDist && nextPos != lastPos)
             {
-                direction = dir;
-
-                if (!isTweening)
-                {
-                    CheckNextMove();
-                }
-                
+                possibleDirs.Add(dir);
             }
         }
+
+        if (possibleDirs.Count == 0)
+        {
+            float bestDist = float.MaxValue;
+            string bestDir = validDirs[0];
+            foreach (string dir in validDirs)
+            {
+                Vector3 nextPos = PosToTileMap(currentPos + DirToVector(dir) * stepSize);
+                float dist = Vector3.Distance(nextPos, targetCorner);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestDir = dir;
+                }
+            }
+            possibleDirs.Add(bestDir);
+        }
+
+        direction = possibleDirs[Random.Range(0, possibleDirs.Count)];
+
+        if (!isTweening)
+        {
+            CheckNextMove();
+        }
+    }
+    
+    public void ResetCornerTarget()
+    {
+        Vector3 currentPos = transform.position;
+        float minDist = float.MaxValue;
+        int closestIndex = 0;
+
+        for (int i = 0; i < cornerTiles.Count; i++)
+        {
+            float dist = Vector3.Distance(currentPos, cornerTiles[i]);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestIndex = i;
+            }
+        }
+        currentCornerIndex = closestIndex;
     }
     void ReviveGhost()
     {
-        if (gameObject.GetComponent<GhostStateManager>().isDead)
+        if (GetComponent<GhostStateManager>().isDead)
         {
-            gameObject.GetComponent<GhostStateManager>().Revive();
+            GetComponent<GhostStateManager>().Revive();
         }
         List<Vector3> exitTiles = new List<Vector3>
         {
@@ -374,20 +433,22 @@ public class GhostController : MonoBehaviour
         Vector3 directionToGo = closestTile - currentPos;
 
         string dir = directionToGo.y > 0 ? "up" : "down";
+        ResetCornerTarget();
         UpdateGhost(dir, PosToTileMap(closestTile));
+        foundOuterWall = false;
         hasExitedSpawn = true;
     }
     public void ResetGame()
     {
         StopAllCoroutines(); 
         isTweening = true;   
-
+        foundOuterWall = false;
         transform.position = spawnPoint;
         lastTile = Vector3.zero;
         lastDir = null;
         currentDirection = null;
         hasExitedSpawn = false;
-
+        currentCornerIndex = 0;
         GetComponent<GhostStateManager>().Revive();
         StartCoroutine(WaitSec());
     }
@@ -395,7 +456,7 @@ public class GhostController : MonoBehaviour
     {
         StopAllCoroutines(); 
         isTweening = true;   
-
+        foundOuterWall = false;
         transform.position = spawnPoint;
         lastTile = Vector3.zero;
         lastDir = null;
@@ -446,14 +507,17 @@ public class GhostController : MonoBehaviour
             Vector3 next = PosToTileMap(pos + (dir.Value * stepSize));
             if (tileMap.TryGetValue(next, out string tileType))
             {
-                if(gameObject.GetComponent<GhostStateManager>().isDead){
-                    if (tileType != "Wall")
+                
+                if (gameObject.GetComponent<GhostStateManager>().isDead)
+                {
+                    if (tileType != "Wall" && tileType != "OutsideWall")
                     {
                         validDirs.Add(dir.Key);
                     }
-                } else
+                }
+                else
                 {
-                    if (tileType != "Wall" && tileType != "GhostSpawn")
+                    if (tileType != "Wall" && tileType != "GhostSpawn" && tileType != "OutsideWall")
                     {
                         validDirs.Add(dir.Key);
                     }
@@ -505,16 +569,18 @@ public class GhostController : MonoBehaviour
         }
         if(gameObject.GetComponent<GhostStateManager>().isDead)
         {
-            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall")
+            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "OutsideWall")
             {
+                
                 UpdateGhost(direction, nextPos);
                 currentDirection = direction;
                 lastTile = checker;
                 lastDir = direction;
             }
+            
         } else
         {
-            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn")
+            if (tileMap.TryGetValue(nextPos, out string tileType) && tileType != "Wall" && tileType != "GhostSpawn" && tileType != "OutsideWall")
             {
                 UpdateGhost(direction, nextPos);
                 currentDirection = direction;
