@@ -48,7 +48,7 @@ public class UIManager3D : MonoBehaviour
 
         timeText.text = $"Time: {mins:00}:{secs:00}:{millisecs:00}";
 
-        PelletTrackerText.text = $"Score: {scoreManager.totalPellets:000}";
+        PelletTrackerText.text = $"Pellets: {scoreManager.totalPellets:000}";
     }
 
     public void EndGame()
