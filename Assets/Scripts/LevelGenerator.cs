@@ -552,10 +552,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -563,10 +565,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }

@@ -252,6 +252,7 @@ GameObject:
   - component: {fileID: -7769992311076114795}
   - component: {fileID: -1368972517762490310}
   - component: {fileID: 3984840558604289485}
+  - component: {fileID: 8812841013197726260}
   m_Layer: 0
   m_Name: Ghost4
   m_TagString: Ghost
@@ -411,3 +412,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0eae4668bdb1bd499e36d4d86d98877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scaredFor: 7
+  recoveringFor: 3
+  deadFor: 3
+  isDead: 0
+  state: 0
+--- !u!114 &8812841013197726260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221917283953747163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c57a0b5efe8c341b462fc9ee60efd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foundOuterWall: 0
+  isTweening: 0
+  isScared: 0
+  levelGen: {fileID: 0}
+  spawnPoint: {x: 0, y: 0, z: 0}
+  walkSpeed: 0
+  hasExitedSpawn: 0
