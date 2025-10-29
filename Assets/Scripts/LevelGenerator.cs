@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using Debug = UnityEngine.Debug;
 
 public class LevelGeneratort : MonoBehaviour
 {
     public List<GameObject> levelTiles = new List<GameObject>();
-    public GameObject map;
+    private GameObject map;
+    public Dictionary<Vector3, string> tileMap = new Dictionary<Vector3, string>();
+    public GameObject player;
+    public GameObject ghost1;
+    public GameObject ghost2;
+    public GameObject ghost3;
+    public GameObject ghost4;
+    private GameStateController scoreManager;
+    public List<Vector3> spawnPoints = new List<Vector3>();
 
     // Start is called before the first frame update
     int[,] levelMap =
@@ -30,6 +40,9 @@ public class LevelGeneratort : MonoBehaviour
     };
     void Start()
     {
+        map = GameObject.FindWithTag("Level");
+        player = GameObject.FindWithTag("Player");
+        scoreManager = gameObject.GetComponent<GameStateController>();
         DestroyCurrentMap(map);
         GenerateMap(levelMap);
     }
@@ -145,45 +158,75 @@ public class LevelGeneratort : MonoBehaviour
                 Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, -y * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
-                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f,0f,270f), map.transform);
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                    tileMap.Add(transformPos, "OutsideWall");
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "Empty");
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost3.transform.position = transformPos;
+
+                        ghost3.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
+                    }
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "Pellet");
+                    scoreManager.totalPellets++;
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "PowerPellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                         else
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                     }
                     if (x == mapBlueprint.GetLength(1) - 1)
@@ -191,48 +234,59 @@ public class LevelGeneratort : MonoBehaviour
                         if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                         else
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                     }
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                        tileMap.Add(transformPos, "Wall");
                     }
                     else if (y == mapBlueprint.GetLength(0))
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "Wall");
                     }
                     else if (y > 0 && y < mapBlueprint.GetLength(0))
                     {
                         if (x == 0)
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                         else if (x == mapBlueprint.GetLength(1))
                         {
                             Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                            tileMap.Add(transformPos, "Wall");
                         }
                     }
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "GhostSpawn");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "GhostSpawn");
                     }
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -242,10 +296,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -253,10 +309,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }
@@ -267,10 +325,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                             }
                             else if (x == 0)
@@ -278,10 +338,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "Wall");
  
                                 }
                             }
@@ -294,16 +356,20 @@ public class LevelGeneratort : MonoBehaviour
                     if (rotation == 90f)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
-                    } else if (rotation == 180f)
+                    }
+                    else if (rotation == 180f)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
-                    }else if (rotation == 270f)
+                    }
+                    else if (rotation == 270f)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
-                    }else if (rotation == 0f)
+                    }
+                    else if (rotation == 0f)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
                     }
+                    tileMap.Add(transformPos, "Wall");
                 }
                 readX++;
             }
@@ -319,35 +385,74 @@ public class LevelGeneratort : MonoBehaviour
                 if (y == 0 && x == 0)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "OutsideWall");
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (y == 1 && x == 1)
                 {
+                    player.transform.position = transformPos;
+                    if (player.GetComponent<PacStudentController>().spawnPoint != transformPos)
+                    {
+                        player.GetComponent<PacStudentController>().spawnPoint = transformPos;
+                    }
+                }
+                if (mapBlueprint[y, x] == 0 )
+                {
+
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "Empty");
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost1.transform.position = transformPos;
+
+                        ghost1.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
+                    }
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "Pellet");
+                    scoreManager.totalPellets++;
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    tileMap.Add(transformPos, "PowerPellet");
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -373,6 +478,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
@@ -395,6 +501,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.Add(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -406,6 +513,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 1)
                 {
+                    
                     if (y > 0)
                     {
                         if (mapBlueprint[y - 1, x] == 1 || mapBlueprint[y - 1, x] == 2)
@@ -415,10 +523,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -426,10 +536,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }
@@ -440,10 +552,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -451,10 +565,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }
@@ -463,6 +579,7 @@ public class LevelGeneratort : MonoBehaviour
                 if (mapBlueprint[y, x] == 3)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, GenerateCorner(y, x, mapBlueprint)), map.transform);
+                    tileMap.Add(transformPos, "Wall");
                 }
             }
         }
@@ -479,35 +596,64 @@ public class LevelGeneratort : MonoBehaviour
                 if (y == 0 && x == 0)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                    tileMap.Add(transformPos, "OutsideWall");
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.Add(transformPos, "Empty");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost2.transform.position = transformPos;
+
+                        ghost2.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
+                    }
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.Add(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.Add(transformPos, "PowerPellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
+                    
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
                 {
+                    
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -533,6 +679,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -555,6 +702,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.Add(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -575,10 +723,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -586,10 +736,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }
@@ -600,10 +752,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                             }
                             else if (x == 0)
@@ -611,10 +765,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                             }
                         }
@@ -639,6 +795,7 @@ public class LevelGeneratort : MonoBehaviour
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
                     }
+                    tileMap.Add(transformPos, "Wall");
                 }
             }
             readY++;
@@ -650,26 +807,50 @@ public class LevelGeneratort : MonoBehaviour
         for (int y = mapBlueprint.GetLength(0)-2; y >= 0; y--)
         {
             int readX = 0;
-            for (int x = mapBlueprint.GetLength(1)-1; x >= 0; x--)
+            for (int x = mapBlueprint.GetLength(1) - 1; x >= 0; x--)
             {
-                Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY-mapBlueprint.GetLength(0)) * 0.32f, 0);
+                Vector3 transformPos = new Vector3((mapBlueprint.GetLength(1) + readX) * 0.32f, (-readY - mapBlueprint.GetLength(0)) * 0.32f, 0);
                 if (y == 0 && x == 0)
                 {
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                    tileMap.Add(transformPos, "OutsideWall");
                 }
-                if (mapBlueprint[y, x] == 0 || mapBlueprint[y, x] == 5 || mapBlueprint[y, x] == 6)
+                if (mapBlueprint[y, x] == 0 )
                 {
+                    tileMap.Add(transformPos, "Empty");
                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    if(mapBlueprint[y-1, x] == 8)
+                    {
+                        ghost4.transform.position = transformPos;
+
+                        ghost4.GetComponent<GhostController>().spawnPoint = transformPos;
+                        spawnPoints.Add(transformPos);
+                        
+                    }
+                }
+                if (mapBlueprint[y, x] == 5)
+                {
+                    tileMap.Add(transformPos, "Pellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
+                }
+                if (mapBlueprint[y, x] == 6)
+                {
+                    tileMap.Add(transformPos, "PowerPellet");
+                    Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                    scoreManager.totalPellets++;
                 }
                 if (mapBlueprint[y, x] == 2 && x > 0)
                 {
                     if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 else if (mapBlueprint[y, x] == 2 && x <= 0)
@@ -677,14 +858,17 @@ public class LevelGeneratort : MonoBehaviour
                     if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                     else
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.identity, map.transform);
+                        tileMap.Add(transformPos, "OutsideWall");
                     }
                 }
                 if (mapBlueprint[y, x] == 4)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (x > 0 && x < mapBlueprint.GetLength(1) - 1)
                     {
                         if ((mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3 || mapBlueprint[y, x - 1] == 8) && (mapBlueprint[y, x + 1] == 4 || mapBlueprint[y, x + 1] == 3 || mapBlueprint[y, x + 1] == 8))
@@ -710,6 +894,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 7)
                 {
+                    tileMap.Add(transformPos, "Wall");
                     if (y == 0)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -732,6 +917,7 @@ public class LevelGeneratort : MonoBehaviour
                 }
                 if (mapBlueprint[y, x] == 8)
                 {
+                    tileMap.Add(transformPos, "GhostSpawn");
                     if (mapBlueprint[y, x - 1] == 4 || mapBlueprint[y, x - 1] == 3)
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
@@ -752,10 +938,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                             else if (x == 0)
@@ -763,10 +951,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 270f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 0f), map.transform);
+                                    tileMap.Add(transformPos, "OutsideWall");
                                 }
                             }
                         }
@@ -777,10 +967,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x - 1] == 2 || mapBlueprint[y, x - 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                             }
                             else if (x == 0)
@@ -788,10 +980,12 @@ public class LevelGeneratort : MonoBehaviour
                                 if (mapBlueprint[y, x + 1] == 2 || mapBlueprint[y, x + 1] == 1)
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                                 else
                                 {
                                     Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 90f), map.transform);
+                                    tileMap.Add(transformPos, "Wall");
                                 }
                             }
                         }
@@ -816,9 +1010,11 @@ public class LevelGeneratort : MonoBehaviour
                     {
                         Instantiate(levelTiles[mapBlueprint[y, x]], transformPos, Quaternion.Euler(0f, 0f, 180f), map.transform);
                     }
+                    tileMap.Add(transformPos, "Wall");
                 }
                 readX++;
-            }
+            }    
+        
             readY++;
         }
     }

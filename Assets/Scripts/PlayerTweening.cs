@@ -19,7 +19,7 @@ public class PlayerTweening : MonoBehaviour
     }
 
     // Update is called once per frame
-     IEnumerator PlayerMove()
+    IEnumerator PlayerMove()
     {
         int counter = 0;
         while (true)

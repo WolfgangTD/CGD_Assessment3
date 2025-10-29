@@ -6,24 +6,45 @@ public class SoundController : MonoBehaviour
 {
 	public AudioSource audioSource;
 	public AudioClip loopSound;
+	public AudioClip scaredSound;
+	public AudioClip deadSound;
 	private float startTime;
-	
+	private GameObject HUD;
+
 	// Start is called before the first frame update
 	void Start()
 	{
-		startTime = Time.time;
+		HUD = GameObject.FindGameObjectWithTag("HUD");
+		StartCoroutine(Waiting());
 	}
+	public void ScaredState()
+    {
+        audioSource.clip = scaredSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }
+	public void DeadState()
+    {
+        audioSource.clip = deadSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }
 
-	// Update is called once per frame
-	void Update()
+	public void BackToNormal()
+    {
+        audioSource.clip = loopSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }	
+	
+	IEnumerator Waiting()
 	{
-		if (Time.time - startTime > 3f && audioSource.clip != loopSound)
+		while (HUD.GetComponent<UIManager>().countDownDone == false)
 		{
-			audioSource.Stop();
-			audioSource.clip = loopSound;
-
-			audioSource.Play();
-			audioSource.loop = true;
-        }
-	}
+			yield return null;
+		}
+		audioSource.clip = loopSound;
+		audioSource.Play();
+		audioSource.loop = true;
+    }
 }
