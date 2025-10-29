@@ -418,9 +418,9 @@ public class GhostController3D : MonoBehaviour
     }
     void ReviveGhost()
     {
-        if (GetComponent<GhostStateManager>().isDead)
+        if (GetComponent<GhostStateManager3D>().isDead)
         {
-            GetComponent<GhostStateManager>().Revive();
+            GetComponent<GhostStateManager3D>().Revive();
         }
         List<Vector3> exitTiles = new List<Vector3>
         {

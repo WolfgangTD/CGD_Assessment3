@@ -82,6 +82,7 @@ public class PacStudentController3D : MonoBehaviour
     {
         yield return new WaitForSeconds(secs);
         player.transform.position = spawnPoint;
+        cameraTransform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
         isDead = false;
     }
     void GetMovementInput()
