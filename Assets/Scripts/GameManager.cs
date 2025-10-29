@@ -1,19 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    PlayerPrefs HIGHSCORE;
-    PlayerPrefs HIGHSCORE_TIME;
+    public static GameManager Instance { get; private set; }
+
     void Awake()
     {
-        DontDestroyOnLoad(GameObject.FindGameObjectWithTag("GameManager"));
-    }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 }

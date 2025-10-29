@@ -95,7 +95,7 @@ public class UIManager : MonoBehaviour
         int countdownTime=10;
         while (countdownTime > 0)
         {
-            GhostScareTimerText.text = $"Ghost Scared Timer:\n{countdownTime:00}";
+            GhostScareTimerText.text = $"Ghost Scared Timer:{countdownTime:00}";
             yield return new WaitForSeconds(1);
             countdownTime--;
         }
